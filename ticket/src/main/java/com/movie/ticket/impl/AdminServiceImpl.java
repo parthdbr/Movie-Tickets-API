@@ -110,8 +110,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public categoryBookedSeats categoryBookedSeats(String category) {
         categoryBookedSeats result = new categoryBookedSeats();
-        result.setCategory(category.toLowerCase(Locale.ROOT));
-        List<User> users = userRepository.findByCategoryIgnoreCaseAndSoftDeleteIsFalse(category);
+        result.setCategory(category);
+        List<User> users = userRepository.findByCategoryAndSoftDeleteIsFalse(category);
         List<Integer> seats = new ArrayList<>();
         for (User user : users) {
             seats.addAll(user.getBooked_seats());
