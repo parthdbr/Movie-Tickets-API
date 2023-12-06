@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
                 if (!ObjectUtils.isEmpty(user)) {
                     nullAware.copyProperties(user, seatsDTO);
-                    emailService.sendEmail(new String[] { seatsDTO.getEmail(), "harsh.s@techroversolutions.com", "harshdsolanki2010@gmail.com" }, "Your Booked Movie Tickets", "Selected seats :\n "+seatsDTO.getCategory()+" "+ seatsDTO.getBooked_seats().toString());
+                    emailService.sendEmail(new String[] { seatsDTO.getEmail(), "xyz@yopmail.com" }, "Your Booked Movie Tickets", "Selected seats :\n "+seatsDTO.getCategory()+" "+ seatsDTO.getBooked_seats().toString());
                     return userRepository.save(user);
                 } else {
                     throw new UserNotExistsException();

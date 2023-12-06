@@ -89,7 +89,7 @@ public class AdminServiceImpl implements AdminService {
         if(ObjectUtils.isEmpty(categoryExists)) {
 
                 Category category = modelMapper.map(categoryDTO, Category.class);
-            emailService.sendEmail(new String[] { "xyz@yopmail.com", "parthdbr@gmail.com", "harshdsolanki2010@gmail.com" }, "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number());
+            emailService.sendEmail(new String[] { "xyz@yopmail.com", "parthdbr@gmail.com"}, "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number());
 
             return categoryRepository.save(category);
 
@@ -110,7 +110,7 @@ public class AdminServiceImpl implements AdminService {
     public Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException {
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         nullAware.copyProperties(category, categoryDTO);
-        emailService.sendEmail(new String[] { "xyz@yopmail.com", "parthdbr@gmail.com", "harshdsolanki2010@gmail.com" }, "Category updated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number());
+        emailService.sendEmail(new String[] { "xyz@yopmail.com", "parthdbr@gmail.com" }, "Category updated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number());
 
         return categoryRepository.save(category);
     }
@@ -120,7 +120,7 @@ public class AdminServiceImpl implements AdminService {
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         if (!ObjectUtils.isEmpty(category)) {
             category.setSoftDelete(true);
-            emailService.sendEmail(new String[] { "xyz@yopmail.com", "parthdbr@gmail.com", "harshdsolanki2010@gmail.com" }, "Category deleted", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number());
+            emailService.sendEmail(new String[] { "xyz@yopmail.com", "parthdbr@gmail.com" }, "Category deleted", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number());
 
             categoryRepository.save(category);
         }
