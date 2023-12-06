@@ -13,6 +13,7 @@ import com.movie.ticket.repository.AdminCriteriaRepository;
 import com.movie.ticket.service.AdminService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -167,6 +168,29 @@ public class adminController {
         }
 
         return response;
+    }
+
+    @GetMapping(value = "/find_By_Email", produces = "application/json")
+    public DataResponse<User> getUserByEmail(String email) {
+
+        User users = adminService.getUserByEmail(email);
+        DataResponse<User> response = new DataResponse<>();
+        try {
+            if (users != null) {
+                if (!ObjectUtils.isEmpty(users)) {
+                    response.setData(users);
+                    response.setStatus(new Response(HttpStatus.OK, "Data Fetched", "200"));
+                } else {
+                    response.setStatus(new Response(HttpStatus.NOT_FOUND, "No Data Available", "404"));
+                }
+            } else
+                response.setStatus(new Response(HttpStatus.NOT_FOUND, "No Data Available", "404"));
+
+        } catch (Exception e) {
+            response.setStatus(new Response(HttpStatus.NOT_FOUND, "No Data Available", "404"));
+        }
+        return response;
+
     }
 
 }

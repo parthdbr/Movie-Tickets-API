@@ -132,4 +132,10 @@ public class AdminServiceImpl implements AdminService {
     public User getUserBySeatsBooked(int seatNumber) throws UserNotExistsException {
         return adminCriteriaRepository.getUserBySeatNumber(seatNumber);
     }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return adminCriteriaRepository.getUserByEmail(email);
+
+    }
 }

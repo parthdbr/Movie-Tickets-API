@@ -7,4 +7,6 @@ public interface AdminCriteriaRepository {
     String checkSeatsAvailable(int startSeatNumber, int endSeatNumber);
 
     User getUserBySeatNumber(int seatNumber) throws UserNotExistsException;
+
+    User getUserByEmail(String email);
 }

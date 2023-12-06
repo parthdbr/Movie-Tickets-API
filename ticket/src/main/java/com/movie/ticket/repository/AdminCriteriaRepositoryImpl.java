@@ -53,4 +53,13 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
         else
             throw new UserNotExistsException();
     }
+
+    @Override
+    public User getUserByEmail(String email) {
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where("email").is(email).and("softDelete").ne(true));
+
+        return mongoTemplate.findOne(query, User.class);
+    }
 }
