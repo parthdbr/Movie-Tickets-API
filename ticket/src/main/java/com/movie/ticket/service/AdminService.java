@@ -16,7 +16,7 @@ public interface AdminService {
 
     Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException, SeatNotAvailable;
 
-    List<Category> getAllCategory();
+    Page<Category> getAllCategory(int page, int size);
 
     Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException;
 

@@ -24,7 +24,9 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
 
     @Override
     public String checkSeatsAvailable(CategoryDTO categoryDTO) {
-        List<Category> categories = categoryRepository.findBySoftDeleteIsFalse();
+        Query query = new Query();
+        query.addCriteria(Criteria.where("softDelete").is(false));
+        List<Category> categories = mongoTemplate.find(query,Category.class);
         int start = categoryDTO.getStart_seat_number();
         int end = categoryDTO.getEnd_seat_number();
         for(Category i : categories) {

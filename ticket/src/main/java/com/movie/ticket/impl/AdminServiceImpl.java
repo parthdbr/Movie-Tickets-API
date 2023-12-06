@@ -93,8 +93,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<Category> getAllCategory() {
-        return categoryRepository.findBySoftDeleteIsFalse();
+    public Page<Category> getAllCategory(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return categoryRepository.findBySoftDeleteIsFalse(pageable);
     }
 
     @Override

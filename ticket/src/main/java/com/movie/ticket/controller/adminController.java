@@ -49,7 +49,7 @@ public class adminController {
     }
 
     @PostMapping("/get_users")
-    public PageResponse<User> getAllUser(UserSearchDTO userSearchDTO) {
+    public PageResponse<User> getAllUser(@RequestBody UserSearchDTO userSearchDTO) {
         PageResponse<User> response = new PageResponse<>();
 
         Page<User> users = adminService.getAllUser(userSearchDTO);
@@ -95,12 +95,21 @@ public class adminController {
     }
 
     @GetMapping("/get_categories")
-    public ListDataResponse<Category> getAllCategory() throws CategoryExistsException {
-        ListDataResponse<Category> response = new ListDataResponse<>();
+    public PageResponse<Category> getAllCategory(int page, int size) throws CategoryExistsException {
+        PageResponse<Category> response = new PageResponse<>();
+        Page<Category> categories = adminService.getAllCategory(page, size);
 
         try {
-            response.setData(adminService.getAllCategory());
-            response.setStatus(new Response(HttpStatus.OK, "Data Available", "200"));
+            if(!categories.isEmpty()) {
+                response.setUsers(categories.getContent());
+                response.setPage_number((long) page);
+                response.setSize_of_page((long) size);
+                response.setTotal_page((long) categories.getTotalPages());
+                response.setTotal_count(categories.getTotalElements());
+                response.setStatus(new Response(HttpStatus.OK, "Data Available", "200"));
+            }else
+                response.setStatus(new Response(HttpStatus.NOT_FOUND, "No Data Available", "404"));
+
 
         }catch(Exception e) {
 
