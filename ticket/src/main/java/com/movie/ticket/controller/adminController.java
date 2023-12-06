@@ -2,6 +2,7 @@ package com.movie.ticket.controller;
 
 import com.movie.ticket.DTO.CategoryDTO;
 import com.movie.ticket.DTO.UserDTO;
+import com.movie.ticket.DTO.UserSearchDTO;
 import com.movie.ticket.decorator.*;
 import com.movie.ticket.exception.CategoryExistsException;
 import com.movie.ticket.exception.SeatNotAvailable;
@@ -47,17 +48,17 @@ public class adminController {
         return response;
     }
 
-    @GetMapping("/get_users")
-    public PageResponse<User> getAllUser(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "3") int size ) {
+    @PostMapping("/get_users")
+    public PageResponse<User> getAllUser(UserSearchDTO userSearchDTO) {
         PageResponse<User> response = new PageResponse<>();
 
-        Page<User> users = adminService.getAllUser(page, size);
+        Page<User> users = adminService.getAllUser(userSearchDTO);
 
         try {
             if(!users.isEmpty()) {
                 response.setUsers(users.getContent());
-                response.setPage_number((long) page);
-                response.setSize_of_page((long) size);
+                response.setPage_number((long) userSearchDTO.getPage());
+                response.setSize_of_page((long) userSearchDTO.getSize());
                 response.setTotal_page((long) users.getTotalPages());
                 response.setTotal_count(users.getTotalElements());
                 response.setStatus(new Response(HttpStatus.OK, "Data Available", "200"));

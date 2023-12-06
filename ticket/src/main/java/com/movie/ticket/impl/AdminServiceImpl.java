@@ -40,6 +40,9 @@ public class AdminServiceImpl implements AdminService {
     AdminCriteriaRepository adminCriteriaRepository;
 
     @Autowired
+    UserCriteriaRepository userCriteriaRepository;
+
+    @Autowired
     NullAwareBeanUtilsBean nullAware;
     @Override
     public User addUser(@NotNull UserDTO userDTO) throws UserExistsException {
@@ -69,10 +72,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Page<User> getAllUser(int page, int size ) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        return userRepository.findBySoftDeleteIsFalse(pageable);
+    public Page<User> getAllUser(UserSearchDTO userSearchDTO ) {
+//        Pageable pageable = PageRequest.of(page, size);
+        return userCriteriaRepository.findBySoftDeleteIsFalse(userSearchDTO);
+//        return userRepository.findBySoftDeleteIsFalse(pageable);
     }
 
     @Override

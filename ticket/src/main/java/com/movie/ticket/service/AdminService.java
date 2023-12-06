@@ -12,7 +12,7 @@ import java.util.*;
 public interface AdminService {
     public User addUser(UserDTO userDTO) throws UserExistsException;
 
-    Page<User> getAllUser(int page, int size);
+    Page<User> getAllUser(UserSearchDTO userSearchDTO);
 
     Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException, SeatNotAvailable;
 

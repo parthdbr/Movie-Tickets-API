@@ -1,7 +1,10 @@
 package com.movie.ticket.repository;
 
+import com.movie.ticket.DTO.UserSearchDTO;
 import com.movie.ticket.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -13,6 +16,9 @@ import java.util.List;
 public class UserCriteriaRepositoryImpl implements UserCriteriaRepository {
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    MongoOperations mongoOperations;
 
 
     @Override
@@ -34,5 +40,32 @@ public class UserCriteriaRepositoryImpl implements UserCriteriaRepository {
         List<User> user = mongoTemplate.find(query, User.class);
 
         return !user.isEmpty();
+    }
+
+    @Override
+    public Page<User> findBySoftDeleteIsFalse(UserSearchDTO data) {
+        Pageable pageable = PageRequest.of(data.getPage(), data.getSize());
+        Query query = new Query().with(pageable);
+
+        Criteria criteria = new Criteria();
+
+        criteria.andOperator(
+                Criteria.where("softDelete").is(false),
+                new Criteria().orOperator(
+                        Criteria.where("first_name").regex(".*" + data.getSearch() + ".*", "i"),
+                        Criteria.where("last_name").regex(".*" + data.getSearch() + ".*", "i"),
+                        Criteria.where("email").regex(".*" + data.getSearch() + ".*", "i")
+
+                ));
+
+        query.addCriteria(Criteria.where("category").is(data.getCategory().toLowerCase()));
+
+        query.addCriteria(criteria).with(Sort.by(Sort.Direction.valueOf(data.getOrder()), data.getField()));
+
+        List<User> res = mongoTemplate.find(query, User.class);
+
+        return new PageImpl<>(res, pageable, mongoOperations.count(query, User.class));
+
+
     }
 }
