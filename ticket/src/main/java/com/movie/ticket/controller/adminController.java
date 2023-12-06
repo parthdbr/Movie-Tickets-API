@@ -88,8 +88,6 @@ public class adminController {
         }catch(Exception | CategoryExistsException e) {
 
             response.setStatus(new Response(HttpStatus.NO_CONTENT, "Category exists with this name", "204"));
-        } catch (SeatNotAvailable e) {
-
         }
         return response;
     }

@@ -79,7 +79,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException, SeatNotAvailable {
+    public Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException {
         Category categoryExists = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(categoryDTO.getName());
         if(ObjectUtils.isEmpty(categoryExists)) {
 

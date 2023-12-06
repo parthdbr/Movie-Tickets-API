@@ -57,8 +57,9 @@ public class UserCriteriaRepositoryImpl implements UserCriteriaRepository {
                         Criteria.where("email").regex(".*" + data.getSearch() + ".*", "i")
 
                 ));
-
-        query.addCriteria(Criteria.where("category").is(data.getCategory().toLowerCase()));
+        if (data.getCategory() != null) {
+            query.addCriteria(Criteria.where("category").is(data.getCategory().toLowerCase()));
+        }
 
         query.addCriteria(criteria).with(Sort.by(Sort.Direction.valueOf(data.getOrder()), data.getField()));
 

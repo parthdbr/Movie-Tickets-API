@@ -14,7 +14,7 @@ public interface AdminService {
 
     Page<User> getAllUser(UserSearchDTO userSearchDTO);
 
-    Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException, SeatNotAvailable;
+    Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException;
 
     Page<Category> getAllCategory(int page, int size);
 
