@@ -14,6 +14,7 @@ import com.movie.ticket.service.AdminService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,12 +47,21 @@ public class adminController {
     }
 
     @GetMapping("/get_users")
-    public ListDataResponse<User> getAllUser() {
-        ListDataResponse<User> response = new ListDataResponse<>();
+    public PageResponse<User> getAllUser(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "3") int size ) {
+        PageResponse<User> response = new PageResponse<>();
+
+        Page<User> users = adminService.getAllUser(page, size);
 
         try {
-            response.setData(adminService.getAllUser());
-            response.setStatus(new Response(HttpStatus.OK, "Data Available", "201"));
+            if(!users.isEmpty()) {
+                response.setUsers(users.getContent());
+                response.setPage_number((long) page);
+                response.setSize_of_page((long) size);
+                response.setTotal_page((long) users.getTotalPages());
+                response.setTotal_count(users.getTotalElements());
+                response.setStatus(new Response(HttpStatus.OK, "Data Available", "200"));
+            }else
+                response.setStatus(new Response(HttpStatus.NOT_FOUND, "No Data Available", "404"));
 
         }catch(Exception e) {
 
