@@ -27,12 +27,12 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
         Query query = new Query();
         query.addCriteria(Criteria.where("softDelete").is(false));
         List<Category> categories = mongoTemplate.find(query,Category.class);
-        int start = categoryDTO.getStart_seat_number();
-        int end = categoryDTO.getEnd_seat_number();
+        String start = categoryDTO.getStart_seat_number();
+        String end = categoryDTO.getEnd_seat_number();
         for(Category i : categories) {
 
-            if ((start >= i.getStart_seat_number() && start <= i.getEnd_seat_number())
-            || (end>=i.getStart_seat_number() && end<=i.getEnd_seat_number())){
+            if ((Integer.parseInt(start) >= Integer.parseInt(i.getStart_seat_number()) && Integer.parseInt(start) <= Integer.parseInt(i.getEnd_seat_number()))
+            || (Integer.parseInt(end) >=Integer.parseInt(i.getStart_seat_number()) && Integer.parseInt(end)<=Integer.parseInt(i.getEnd_seat_number()))){
                 return i.getName();
             }
 
@@ -77,13 +77,13 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
 
         List<Category> categories = mongoTemplate.find(query, Category.class);
 
-        int start = categoryDTO.getStart_seat_number();
-        int end = categoryDTO.getEnd_seat_number();
+        String start = categoryDTO.getStart_seat_number();
+        String end = categoryDTO.getEnd_seat_number();
 
         for(Category i : categories) {
 
-            if ((start >= i.getStart_seat_number() && start <= i.getEnd_seat_number())
-                    || (end>=i.getStart_seat_number() && end<=i.getEnd_seat_number())){
+            if ((Integer.parseInt(start) >= Integer.parseInt(i.getStart_seat_number()) && Integer.parseInt(start) <= Integer.parseInt(i.getEnd_seat_number()))
+                    || (Integer.parseInt(end)>=Integer.parseInt(i.getStart_seat_number()) && Integer.parseInt(end)<=Integer.parseInt(i.getEnd_seat_number()))){
                 return i.getName();
             }
 

@@ -20,9 +20,9 @@ public class Category {
 
     String price;
 
-    int start_seat_number;
+    String start_seat_number;
 
-    int end_seat_number;
+    String end_seat_number;
 
 
     boolean softDelete;

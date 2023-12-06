@@ -5,6 +5,7 @@ import com.movie.ticket.decorator.categoryBookedSeats;
 import com.movie.ticket.exception.*;
 import com.movie.ticket.model.*;
 import com.movie.ticket.repository.*;
+import com.movie.ticket.service.EmailService;
 import lombok.*;
 import com.movie.ticket.service.AdminService;
 import com.movie.ticket.config.NullAwareBeanUtilsBean;
@@ -44,6 +45,10 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     NullAwareBeanUtilsBean nullAware;
+
+    @Autowired
+    EmailService emailService;
+
     @Override
     public User addUser(@NotNull UserDTO userDTO) throws UserExistsException {
         User userExists = userRepository.findByEmailContainingAndSoftDeleteIsFalse(userDTO.getEmail());
@@ -84,7 +89,9 @@ public class AdminServiceImpl implements AdminService {
         if(ObjectUtils.isEmpty(categoryExists)) {
 
                 Category category = modelMapper.map(categoryDTO, Category.class);
-                return categoryRepository.save(category);
+            emailService.sendEmail(new String[] { "xyz@yopmail.com", "parthdbr@gmail.com", "harshdsolanki2010@gmail.com" }, "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number());
+
+            return categoryRepository.save(category);
 
         }else {
             log.info("Category Exists");
@@ -103,6 +110,8 @@ public class AdminServiceImpl implements AdminService {
     public Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException {
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         nullAware.copyProperties(category, categoryDTO);
+        emailService.sendEmail(new String[] { "xyz@yopmail.com", "parthdbr@gmail.com", "harshdsolanki2010@gmail.com" }, "Category updated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number());
+
         return categoryRepository.save(category);
     }
 
@@ -111,6 +120,8 @@ public class AdminServiceImpl implements AdminService {
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         if (!ObjectUtils.isEmpty(category)) {
             category.setSoftDelete(true);
+            emailService.sendEmail(new String[] { "xyz@yopmail.com", "parthdbr@gmail.com", "harshdsolanki2010@gmail.com" }, "Category deleted", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number());
+
             categoryRepository.save(category);
         }
     }
