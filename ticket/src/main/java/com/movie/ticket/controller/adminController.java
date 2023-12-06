@@ -129,12 +129,12 @@ public class adminController {
     }
 
     @DeleteMapping("/delete_category")
-    public DataResponse<Category> deleteCategory(@RequestParam String name) throws CategoryExistsException {
+    public DataResponse<Category> deleteCategory(@RequestParam String id) throws CategoryExistsException {
         DataResponse<Category> response = new DataResponse<>();
 
         try{
-            if (adminService.getCategoryByName(name) != null) {
-                adminService.deleteCategory(name);
+            if (adminService.getCategoryById(id) != null) {
+                adminService.deleteCategory(id);
                 response.setStatus(new Response(HttpStatus.OK, "Data deleted", "200"));
             } else {
                 response.setStatus(new Response(HttpStatus.NOT_FOUND, "Data not found", "404"));
@@ -146,11 +146,11 @@ public class adminController {
     }
 
     @GetMapping("/get_category_bookedSeats")
-    public DataResponse<categoryBookedSeats> categoryBookedSeats(@RequestParam String category) {
+    public DataResponse<categoryBookedSeats> categoryBookedSeats(@RequestParam String id) {
         DataResponse<categoryBookedSeats> response = new DataResponse<>();
 
         try{
-            response.setData(adminService.categoryBookedSeats(category));
+            response.setData(adminService.categoryBookedSeats(id));
             response.setStatus(new Response(HttpStatus.OK, "Category Found", "200"));
         }catch (Exception e) {
             response.setStatus(new Response(HttpStatus.NOT_FOUND, "Category Not Found", "404"));
@@ -176,9 +176,9 @@ public class adminController {
     }
 
     @GetMapping(value = "/find_By_Email", produces = "application/json")
-    public DataResponse<User> getUserByEmail(String email) {
+    public DataResponse<User> getUserByEmail(String id) {
 
-        User users = adminService.getUserByEmail(email);
+        User users = adminService.getUserByEmail(id);
         DataResponse<User> response = new DataResponse<>();
         try {
             if (users != null) {

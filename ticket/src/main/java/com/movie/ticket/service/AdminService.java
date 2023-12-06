@@ -20,13 +20,15 @@ public interface AdminService {
 
     Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException;
 
-    void deleteCategory(String name);
+    void deleteCategory(String id);
 
     Category getCategoryByName(String name);
 
-    categoryBookedSeats categoryBookedSeats(String category);
+    categoryBookedSeats categoryBookedSeats(String id);
 
     User getUserBySeatsBooked(int seatNumber) throws UserNotExistsException;
 
     User getUserByEmail(String email);
+
+    Category getCategoryById(String id);
 }

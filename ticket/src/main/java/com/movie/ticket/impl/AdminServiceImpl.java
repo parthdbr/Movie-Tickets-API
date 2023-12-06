@@ -102,8 +102,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void deleteCategory(String name) {
-        Category category = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(name);
+    public void deleteCategory(String id) {
+        Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         if (!ObjectUtils.isEmpty(category)) {
             category.setSoftDelete(true);
             categoryRepository.save(category);
@@ -116,10 +116,12 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public categoryBookedSeats categoryBookedSeats(String category) {
+    public categoryBookedSeats categoryBookedSeats(String id) {
         categoryBookedSeats result = new categoryBookedSeats();
-        result.setCategory(category.toLowerCase(Locale.ROOT));
-        List<User> users = userRepository.findByCategoryIgnoreCaseAndSoftDeleteIsFalse(category);
+//        result.setCategory(category.toLowerCase(Locale.ROOT));
+        Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
+        result.setCategory(category.getName());
+        List<User> users = userRepository.findByCategoryIgnoreCaseAndSoftDeleteIsFalse(category.getName());
         List<Integer> seats = new ArrayList<>();
         for (User user : users) {
             seats.addAll(user.getBooked_seats());
@@ -138,4 +140,11 @@ public class AdminServiceImpl implements AdminService {
         return adminCriteriaRepository.getUserByEmail(email);
 
     }
+
+    @Override
+    public Category getCategoryById(String id) {
+        return categoryRepository.findByIdAndSoftDeleteIsFalse(id);
+    }
+
+
 }

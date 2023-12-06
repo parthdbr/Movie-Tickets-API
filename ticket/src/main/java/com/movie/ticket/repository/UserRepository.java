@@ -16,4 +16,6 @@ public interface UserRepository  extends MongoRepository<User, String> {
      Page<User> findBySoftDeleteIsFalse(Pageable pageable);
 
     List<User> findByCategoryIgnoreCaseAndSoftDeleteIsFalse(String category);
+
+    List<User> findByIdAndSoftDeleteIsFalse(String id);
 }
