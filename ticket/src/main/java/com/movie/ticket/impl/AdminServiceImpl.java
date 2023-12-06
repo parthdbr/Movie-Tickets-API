@@ -122,4 +122,9 @@ public class AdminServiceImpl implements AdminService {
         result.setBooked_seats(seats);
         return result;
     }
+
+    @Override
+    public User getUserBySeatsBooked(int seatNumber) throws UserNotExistsException {
+        return adminCriteriaRepository.getUserBySeatNumber(seatNumber);
+    }
 }

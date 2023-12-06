@@ -24,4 +24,6 @@ public interface AdminService {
     Category getCategoryByName(String name);
 
     categoryBookedSeats categoryBookedSeats(String category);
+
+    User getUserBySeatsBooked(int seatNumber) throws UserNotExistsException;
 }

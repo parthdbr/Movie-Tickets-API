@@ -6,6 +6,7 @@ import com.movie.ticket.decorator.*;
 import com.movie.ticket.exception.CategoryExistsException;
 import com.movie.ticket.exception.SeatNotAvailable;
 import com.movie.ticket.exception.UserExistsException;
+import com.movie.ticket.exception.UserNotExistsException;
 import com.movie.ticket.model.Category;
 import com.movie.ticket.model.User;
 import com.movie.ticket.repository.AdminCriteriaRepository;
@@ -137,6 +138,21 @@ public class adminController {
             response.setStatus(new Response(HttpStatus.OK, "Category Found", "200"));
         }catch (Exception e) {
             response.setStatus(new Response(HttpStatus.NOT_FOUND, "Category Not Found", "404"));
+
+        }
+
+        return response;
+    }
+
+    @GetMapping("/get_user_by_seats_booked")
+    public DataResponse<User> getUserBySeatsBooked(@RequestParam int seatNumber) {
+        DataResponse<User> response = new DataResponse<>();
+
+        try{
+            response.setData(adminService.getUserBySeatsBooked(seatNumber));
+            response.setStatus(new Response(HttpStatus.OK, "Booked Seat Found", "200"));
+        }catch (Exception | UserNotExistsException e) {
+            response.setStatus(new Response(HttpStatus.NOT_FOUND, "Seat is available for booking", "404"));
 
         }
 
