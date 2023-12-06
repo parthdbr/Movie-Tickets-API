@@ -1,5 +1,6 @@
 package com.movie.ticket.repository;
 
+import com.movie.ticket.DTO.CategoryDTO;
 import com.movie.ticket.exception.UserNotExistsException;
 import com.movie.ticket.model.Category;
 import com.movie.ticket.model.User;
@@ -22,13 +23,14 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
     MongoTemplate mongoTemplate;
 
     @Override
-    public String checkSeatsAvailable(int startSeatNumber, int endSeatNumber) {
+    public String checkSeatsAvailable(CategoryDTO categoryDTO) {
         List<Category> categories = categoryRepository.findBySoftDeleteIsFalse();
-
+        int start = categoryDTO.getStart_seat_number();
+        int end = categoryDTO.getEnd_seat_number();
         for(Category i : categories) {
 
-            if ((startSeatNumber >= i.getStart_seat_number() && startSeatNumber <= i.getEnd_seat_number())
-            || (endSeatNumber>=i.getStart_seat_number() && endSeatNumber<=i.getEnd_seat_number())){
+            if ((start >= i.getStart_seat_number() && start <= i.getEnd_seat_number())
+            || (end>=i.getStart_seat_number() && end<=i.getEnd_seat_number())){
                 return i.getName();
             }
 
@@ -61,5 +63,32 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
         query.addCriteria(Criteria.where("email").is(email).and("softDelete").ne(true));
 
         return mongoTemplate.findOne(query, User.class);
+    }
+
+    @Override
+    public String checkSeatsAvailabletoUpdate(CategoryDTO categoryDTO, String id) {
+
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where("id").ne(id).and("softDelete").is(false));
+
+
+        List<Category> categories = mongoTemplate.find(query, Category.class);
+
+        int start = categoryDTO.getStart_seat_number();
+        int end = categoryDTO.getEnd_seat_number();
+
+        for(Category i : categories) {
+
+            if ((start >= i.getStart_seat_number() && start <= i.getEnd_seat_number())
+                    || (end>=i.getStart_seat_number() && end<=i.getEnd_seat_number())){
+                return i.getName();
+            }
+
+        }
+
+
+
+        return null;
     }
 }

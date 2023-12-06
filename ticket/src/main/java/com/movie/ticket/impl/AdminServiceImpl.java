@@ -95,8 +95,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Category updateCategory(String name, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException {
-        Category category = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(name);
+    public Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException {
+        Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         nullAware.copyProperties(category, categoryDTO);
         return categoryRepository.save(category);
     }

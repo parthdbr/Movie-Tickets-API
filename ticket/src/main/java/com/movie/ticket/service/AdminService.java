@@ -18,7 +18,7 @@ public interface AdminService {
 
     List<Category> getAllCategory();
 
-    Category updateCategory(String name, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException;
+    Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException;
 
     void deleteCategory(String name);
 

@@ -74,7 +74,7 @@ public class adminController {
     @PostMapping("/add_category")
     public DataResponse<Category> addCategory(@RequestBody CategoryDTO categoryDTO) {
         DataResponse<Category> response = new DataResponse<>();
-        String seatsAvailable = adminCriteriaRepository.checkSeatsAvailable(categoryDTO.getStart_seat_number(), categoryDTO.getEnd_seat_number());
+        String seatsAvailable = adminCriteriaRepository.checkSeatsAvailable(categoryDTO);
 
         try {
             if (seatsAvailable == null) {
@@ -109,13 +109,18 @@ public class adminController {
     }
 
     @PutMapping("/update_category")
-    public DataResponse<Category> updateCategory(@RequestParam String name , @RequestBody CategoryDTO categoryDTO) throws CategoryExistsException {
+    public DataResponse<Category> updateCategory(@RequestParam String id , @RequestBody CategoryDTO categoryDTO) throws CategoryExistsException {
         DataResponse<Category> response = new DataResponse<>();
+        String seatsAvailable = adminCriteriaRepository.checkSeatsAvailabletoUpdate(categoryDTO, id);
+
 
         try {
-            response.setData(adminService.updateCategory(name, categoryDTO));
-            response.setStatus(new Response(HttpStatus.ACCEPTED, "Data Updated", "200"));
-
+            if (seatsAvailable == null) {
+                response.setData(adminService.updateCategory(id, categoryDTO));
+                response.setStatus(new Response(HttpStatus.ACCEPTED, "Data Updated", "200"));
+            }else{
+                response.setStatus(new Response(HttpStatus.NO_CONTENT, "Seats are occupied by "+seatsAvailable+" category", "204"));
+            }
         }catch(Exception e) {
 
             response.setStatus(new Response(HttpStatus.NOT_FOUND, "Data Not Found with this Name", "404"));
