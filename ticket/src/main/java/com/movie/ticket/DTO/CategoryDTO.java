@@ -9,7 +9,7 @@ import lombok.*;
 public class CategoryDTO {
     String name;
     String price;
-    String start_seat_number;
-    String end_seat_number;
+    int start_seat_number;
+    int end_seat_number;
 
 }

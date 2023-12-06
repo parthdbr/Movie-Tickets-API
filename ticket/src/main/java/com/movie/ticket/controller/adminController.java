@@ -4,9 +4,11 @@ import com.movie.ticket.DTO.CategoryDTO;
 import com.movie.ticket.DTO.UserDTO;
 import com.movie.ticket.decorator.*;
 import com.movie.ticket.exception.CategoryExistsException;
+import com.movie.ticket.exception.SeatNotAvailable;
 import com.movie.ticket.exception.UserExistsException;
 import com.movie.ticket.model.Category;
 import com.movie.ticket.model.User;
+import com.movie.ticket.repository.AdminCriteriaRepository;
 import com.movie.ticket.service.AdminService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,9 @@ public class adminController {
 
     @Autowired
     AdminService adminService;
+
+    @Autowired
+    AdminCriteriaRepository adminCriteriaRepository;
 
 
     @PostMapping("/add_user")
@@ -57,14 +62,21 @@ public class adminController {
     @PostMapping("/add_category")
     public DataResponse<Category> addCategory(@RequestBody CategoryDTO categoryDTO) {
         DataResponse<Category> response = new DataResponse<>();
+        String seatsAvailable = adminCriteriaRepository.checkSeatsAvailable(categoryDTO.getStart_seat_number(), categoryDTO.getEnd_seat_number());
 
         try {
+            if (seatsAvailable == null) {
             response.setData(adminService.addCategory(categoryDTO));
             response.setStatus(new Response(HttpStatus.CREATED, "Data Created", "201"));
+            }else{
+                response.setStatus(new Response(HttpStatus.NO_CONTENT, "Seats are occupied by "+seatsAvailable+" category", "204"));
+            }
 
         }catch(Exception | CategoryExistsException e) {
 
             response.setStatus(new Response(HttpStatus.NO_CONTENT, "Category exists with this name", "204"));
+        } catch (SeatNotAvailable e) {
+
         }
         return response;
     }

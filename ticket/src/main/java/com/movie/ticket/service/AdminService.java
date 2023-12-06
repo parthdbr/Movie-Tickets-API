@@ -13,7 +13,7 @@ public interface AdminService {
 
     List<User> getAllUser();
 
-    Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException;
+    Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException, SeatNotAvailable;
 
     List<Category> getAllCategory();
 

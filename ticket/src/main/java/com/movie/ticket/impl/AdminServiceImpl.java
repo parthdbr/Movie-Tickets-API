@@ -34,6 +34,9 @@ public class AdminServiceImpl implements AdminService {
     CategoryRepository categoryRepository;
 
     @Autowired
+    AdminCriteriaRepository adminCriteriaRepository;
+
+    @Autowired
     NullAwareBeanUtilsBean nullAware;
     @Override
     public User addUser(@NotNull UserDTO userDTO) throws UserExistsException {
@@ -68,12 +71,12 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException {
+    public Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException, SeatNotAvailable {
         Category categoryExists = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(categoryDTO.getName());
         if(ObjectUtils.isEmpty(categoryExists)) {
 
-            Category category = modelMapper.map(categoryDTO, Category.class);
-            return categoryRepository.save(category);
+                Category category = modelMapper.map(categoryDTO, Category.class);
+                return categoryRepository.save(category);
 
         }else {
             log.info("Category Exists");

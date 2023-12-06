@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
         Category c = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(seatsDTO.getCategory());
 
         for(int i:seatsDTO.getBooked_seats()) {
-            if(i>Integer.parseInt(c.getEnd_seat_number()) || i<Integer.parseInt(c.getStart_seat_number())) {
+            if(i>c.getEnd_seat_number() || i<c.getStart_seat_number()) {
                 throw new SeatNotAvailable();
             }
         }
