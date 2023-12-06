@@ -27,17 +27,21 @@ public class userController {
         try {
             if(!ObjectUtils.isEmpty(seatsDTO)) {
                 response.setData(userService.bookseats(seatsDTO));
+
                 response.setStatus(new Response(HttpStatus.ACCEPTED, "Seats booked", "202"));
             }else
                 response.setStatus(new Response(HttpStatus.NOT_ACCEPTABLE, "Please enter the required data", "406"));
-        }catch(Exception | UserNotExistsException e) {
-            response.setStatus(new Response(HttpStatus.NO_CONTENT, "User does not Exists", "204"));
+        }catch(Exception e) {
+            e.printStackTrace();
         } catch (SeatsNotEmptyException e) {
             response.setStatus(new Response(HttpStatus.NOT_ACCEPTABLE, "Selected Seats are already booked", "406"));
         }catch (CategoryNotExistsException e){
             response.setStatus(new Response(HttpStatus.NO_CONTENT, "Category does not Exists", "406"));
         } catch (SeatNotAvailable e) {
             response.setStatus(new Response(HttpStatus.NO_CONTENT, "Seat/Seats not available", "406"));
+        } catch (UserNotExistsException e) {
+            response.setStatus(new Response(HttpStatus.NO_CONTENT, "User does not Exists", "204"));
+
         }
         return response;
     }

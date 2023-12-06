@@ -5,6 +5,7 @@ import com.movie.ticket.model.*;
 import com.movie.ticket.repository.*;
 import com.movie.ticket.DTO.*;
 import com.movie.ticket.config.NullAwareBeanUtilsBean;
+import com.movie.ticket.service.EmailService;
 import com.movie.ticket.service.UserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserCriteriaRepository userCriteriaRepository;
 
+    @Autowired
+    EmailService emailService;
 
 
     @Override
@@ -51,6 +54,7 @@ public class UserServiceImpl implements UserService {
 
                 if (!ObjectUtils.isEmpty(user)) {
                     nullAware.copyProperties(user, seatsDTO);
+                    emailService.sendEmail(seatsDTO.getEmail(), "Your Booked Movie Tickets", "Selected seats are "+seatsDTO.getBooked_seats());
                     return userRepository.save(user);
                 } else {
                     throw new UserNotExistsException();
