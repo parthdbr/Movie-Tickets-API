@@ -13,7 +13,7 @@ public class EmailService {
 
     @Value("${spring.mail.username}") private String sender;
 
-    public void sendEmail(String to, String subject, String body) {
+    public void sendEmail(String[] to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(sender);
         message.setTo(to);
