@@ -1,5 +1,6 @@
 package com.movie.ticket.impl;
 
+import com.movie.ticket.RMQ.RabbitMQProducer;
 import com.movie.ticket.exception.*;
 import com.movie.ticket.model.*;
 import com.movie.ticket.repository.*;
@@ -7,17 +8,20 @@ import com.movie.ticket.DTO.*;
 import com.movie.ticket.config.NullAwareBeanUtilsBean;
 import com.movie.ticket.service.EmailService;
 import com.movie.ticket.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.List;
 
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
@@ -33,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     EmailService emailService;
+
+    @Autowired
+    private RabbitMQProducer rabbitMQProducer;
 
 
     @Override
@@ -55,7 +62,9 @@ public class UserServiceImpl implements UserService {
 
                 if (!ObjectUtils.isEmpty(user)) {
                     nullAware.copyProperties(user, seatsDTO);
-                    emailService.sendEmail(new String[] { seatsDTO.getEmail(), "xyz@yopmail.com" }, "Your Booked Movie Tickets", "Selected seats :\n "+seatsDTO.getCategory()+" "+ seatsDTO.getBooked_seats().toString());
+                    String msg = "Selected seats :\n "+seatsDTO.getCategory()+" "+ seatsDTO.getBooked_seats().toString();
+                    emailService.sendEmail(new String[] { seatsDTO.getEmail(), "xyz@yopmail.com" }, "Your Booked Movie Tickets", msg);
+                    rabbitMQProducer.sendMessage(msg);
                     return userRepository.save(user);
                 } else {
                     throw new UserNotExistsException();
