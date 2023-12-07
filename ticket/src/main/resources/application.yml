@@ -7,3 +7,33 @@ spring:
       host: localhost
       database: movie_ticket
       port: 27017
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    password: kmgp fbdz bcmz wtfk
+    username: parthdbr@gmail.com
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+rabbitmq:
+  queue:
+    name: message-queue
+    json.:
+      name: message-queue-json
+  exchange:
+    name: message-queue-exchange
+  routing:
+    key: message-queue-routing-key
+    json:
+      key: message-queue-routing-json-key
