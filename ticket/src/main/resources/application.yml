@@ -29,7 +29,11 @@ spring:
 rabbitmq:
   queue:
     name: message-queue
+    json.:
+      name: message-queue-json
   exchange:
     name: message-queue-exchange
   routing:
     key: message-queue-routing-key
+    json:
+      key: message-queue-routing-json-key
