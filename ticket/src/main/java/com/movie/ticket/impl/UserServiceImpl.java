@@ -10,9 +10,7 @@ import com.movie.ticket.service.EmailService;
 import com.movie.ticket.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -43,14 +41,14 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User bookseats(@NotNull SeatsDTO seatsDTO) throws InvocationTargetException, IllegalAccessException, UserNotExistsException, CategoryNotExistsException, SeatsNotEmptyException, SeatNotAvailable {
+    public User bookseats(@NotNull SeatsDTO seatsDTO) throws InvocationTargetException, IllegalAccessException, DataNotAvailableException {
         User user = userRepository.findByEmailContainingAndSoftDeleteIsFalse(seatsDTO.getEmail());
 
         Category c = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(seatsDTO.getCategory());
 
         for(int i:seatsDTO.getBooked_seats()) {
             if(i>Integer.parseInt(c.getEnd_seat_number()) || i<Integer.parseInt(c.getStart_seat_number())) {
-                throw new SeatNotAvailable();
+                throw new DataNotAvailableException("Seat/Seats are not available");
             }
         }
 
@@ -67,15 +65,15 @@ public class UserServiceImpl implements UserService {
                     rabbitMQProducer.sendMessage(msg);
                     return userRepository.save(user);
                 } else {
-                    throw new UserNotExistsException();
+                    throw new DataNotAvailableException("User Does not exists");
                 }
 
             } else {
-                throw new SeatsNotEmptyException();
+                throw new DataNotAvailableException("Seat/Seats are not available");
             }
 
         }else{
-            throw new CategoryNotExistsException();
+            throw new DataNotAvailableException("Category does not exists");
         }
     }
 }

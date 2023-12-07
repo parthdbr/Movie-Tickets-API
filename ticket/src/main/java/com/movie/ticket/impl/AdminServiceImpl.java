@@ -50,7 +50,7 @@ public class AdminServiceImpl implements AdminService {
     EmailService emailService;
 
     @Override
-    public User addUser(@NotNull UserDTO userDTO) throws UserExistsException {
+    public User addUser(@NotNull UserDTO userDTO) throws DataAvailableException {
         User userExists = userRepository.findByEmailContainingAndSoftDeleteIsFalse(userDTO.getEmail());
 
         if (ObjectUtils.isEmpty(userExists)) {
@@ -71,8 +71,7 @@ public class AdminServiceImpl implements AdminService {
             return userRepository.save(user);
 
         }else {
-            log.info("User Exists");
-            throw new UserExistsException("User Already exists with this Email");
+            throw new DataAvailableException("User Already exists with this Email");
         }
     }
 
@@ -84,7 +83,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException {
+    public Category addCategory(CategoryDTO categoryDTO) throws DataAvailableException {
         Category categoryExists = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(categoryDTO.getName());
         if(ObjectUtils.isEmpty(categoryExists)) {
 
@@ -94,8 +93,7 @@ public class AdminServiceImpl implements AdminService {
             return categoryRepository.save(category);
 
         }else {
-            log.info("Category Exists");
-            throw new CategoryExistsException("Category Already exists with this Name");
+            throw new DataAvailableException("Category Already exists with this Name");
         }
     }
 
@@ -107,8 +105,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException {
+    public Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException, DataAvailableException{
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
+        if (category==null) {
+
+            throw new DataNotAvailableException("Data Not Found with this Name");
+
+        }
         nullAware.copyProperties(category, categoryDTO);
         emailService.sendEmail(new String[] { "xyz@yopmail.com", "parthdbr@gmail.com" }, "Category updated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number());
 
@@ -136,18 +139,23 @@ public class AdminServiceImpl implements AdminService {
         categoryBookedSeats result = new categoryBookedSeats();
 //        result.setCategory(category.toLowerCase(Locale.ROOT));
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
-        result.setCategory(category.getName());
-        List<User> users = userRepository.findByCategoryIgnoreCaseAndSoftDeleteIsFalse(category.getName());
-        List<Integer> seats = new ArrayList<>();
-        for (User user : users) {
-            seats.addAll(user.getBooked_seats());
+        if (category!=null) {
+            result.setCategory(category.getName());
+            List<User> users = userRepository.findByCategoryIgnoreCaseAndSoftDeleteIsFalse(category.getName());
+            List<Integer> seats = new ArrayList<>();
+            for (User user : users) {
+                seats.addAll(user.getBooked_seats());
+            }
+            result.setBooked_seats(seats);
+            return result;
+        }else {
+            throw new DataNotAvailableException("Category Not Found");
         }
-        result.setBooked_seats(seats);
-        return result;
+
     }
 
     @Override
-    public User getUserBySeatsBooked(int seatNumber) throws UserNotExistsException {
+    public User getUserBySeatsBooked(int seatNumber) throws DataNotAvailableException {
         return adminCriteriaRepository.getUserBySeatNumber(seatNumber);
     }
 

@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
+
 @RestController
 @RequestMapping("/user")
 @SecurityRequirement(name = "BearerAuth")
@@ -21,28 +23,17 @@ public class userController {
     UserService userService;
 
     @PostMapping("/book_seats")
-    public DataResponse<User> bookSeats(@RequestBody SeatsDTO seatsDTO) throws CategoryExistsException {
+    public DataResponse<User> bookSeats(@RequestBody SeatsDTO seatsDTO) throws DataAvailableException, InvocationTargetException, IllegalAccessException {
         DataResponse<User> response = new DataResponse<>();
 
-        try {
+
             if(!ObjectUtils.isEmpty(seatsDTO)) {
                 response.setData(userService.bookseats(seatsDTO));
 
                 response.setStatus(new Response(HttpStatus.ACCEPTED, "Seats booked", "202"));
             }else
                 response.setStatus(new Response(HttpStatus.NOT_ACCEPTABLE, "Please enter the required data", "406"));
-        }catch(Exception e) {
-            e.printStackTrace();
-        } catch (SeatsNotEmptyException e) {
-            response.setStatus(new Response(HttpStatus.NOT_ACCEPTABLE, "Selected Seats are already booked", "406"));
-        }catch (CategoryNotExistsException e){
-            response.setStatus(new Response(HttpStatus.NO_CONTENT, "Category does not Exists", "406"));
-        } catch (SeatNotAvailable e) {
-            response.setStatus(new Response(HttpStatus.NO_CONTENT, "Seat/Seats not available", "406"));
-        } catch (UserNotExistsException e) {
-            response.setStatus(new Response(HttpStatus.NO_CONTENT, "User does not Exists", "204"));
 
-        }
         return response;
     }
 }

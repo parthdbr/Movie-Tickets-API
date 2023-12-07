@@ -8,5 +8,5 @@ import java.lang.reflect.InvocationTargetException;
 
 public interface UserService {
 
-    User bookseats(SeatsDTO seatsDTO) throws InvocationTargetException, IllegalAccessException, UserNotExistsException, CategoryNotExistsException, SeatsNotEmptyException, SeatNotAvailable;
+    User bookseats(SeatsDTO seatsDTO) throws InvocationTargetException, IllegalAccessException, DataNotAvailableException;
 }

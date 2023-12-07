@@ -1,7 +1,7 @@
 package com.movie.ticket.repository;
 
 import com.movie.ticket.DTO.CategoryDTO;
-import com.movie.ticket.exception.UserNotExistsException;
+import com.movie.ticket.exception.DataNotAvailableException;
 import com.movie.ticket.model.Category;
 import com.movie.ticket.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Queue;
 
 @Component
 public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
@@ -44,7 +43,7 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
     }
 
     @Override
-    public User getUserBySeatNumber(int seatNumber) throws UserNotExistsException {
+    public User getUserBySeatNumber(int seatNumber) throws DataNotAvailableException {
 
         Query query = new Query();
 
@@ -55,7 +54,7 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
         if (user!=null)
             return user;
         else
-            throw new UserNotExistsException();
+            throw new DataNotAvailableException("Seat/Seats are available for booking");
     }
 
     @Override

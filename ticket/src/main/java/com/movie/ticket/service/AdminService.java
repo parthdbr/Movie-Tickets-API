@@ -7,18 +7,17 @@ import com.movie.ticket.model.*;
 import org.springframework.data.domain.Page;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
 
 public interface AdminService {
-    public User addUser(UserDTO userDTO) throws UserExistsException;
+    public User addUser(UserDTO userDTO) throws DataAvailableException;
 
     Page<User> getAllUser(UserSearchDTO userSearchDTO);
 
-    Category addCategory(CategoryDTO categoryDTO) throws CategoryExistsException;
+    Category addCategory(CategoryDTO categoryDTO) throws DataNotAvailableException;
 
     Page<Category> getAllCategory(int page, int size);
 
-    Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException;
+    Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException, DataAvailableException;
 
     void deleteCategory(String id);
 
@@ -26,7 +25,7 @@ public interface AdminService {
 
     categoryBookedSeats categoryBookedSeats(String id);
 
-    User getUserBySeatsBooked(int seatNumber) throws UserNotExistsException;
+    User getUserBySeatsBooked(int seatNumber) throws DataNotAvailableException;
 
     User getUserByEmail(String email);
 
