@@ -6,6 +6,7 @@ import com.movie.ticket.exception.*;
 import com.movie.ticket.model.*;
 import com.movie.ticket.repository.*;
 import com.movie.ticket.service.EmailService;
+import jakarta.mail.MessagingException;
 import lombok.*;
 import com.movie.ticket.service.AdminService;
 import com.movie.ticket.config.NullAwareBeanUtilsBean;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -57,13 +59,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Category addCategory(CategoryDTO categoryDTO) throws DataAvailableException {
+    public Category addCategory(CategoryDTO categoryDTO) throws DataAvailableException, IOException, MessagingException {
         Category categoryExists = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(categoryDTO.getName());
         if(ObjectUtils.isEmpty(categoryExists)) {
 
                 Category category = modelMapper.map(categoryDTO, Category.class);
             emailService.sendEmail(emailService.setMailData(
-                    new String[] { "xyz@yopmail.com", "parthdbr@gmail.com"}, "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number()));
+                   "xyz@yopmail.com", "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number()));
 
             return categoryRepository.save(category);
 
@@ -80,7 +82,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException, DataAvailableException{
+    public Category updateCategory(String id, CategoryDTO categoryDTO) throws InvocationTargetException, IllegalAccessException, DataAvailableException, IOException, MessagingException {
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         if (category==null) {
 
@@ -89,18 +91,18 @@ public class AdminServiceImpl implements AdminService {
         }
         nullAware.copyProperties(category, categoryDTO);
         emailService.sendEmail(emailService.setMailData(
-                new String[] { "xyz@yopmail.com", "parthdbr@gmail.com"}, "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number()));
+                 "xyz@yopmail.com", "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number()));
 
         return categoryRepository.save(category);
     }
 
     @Override
-    public void deleteCategory(String id) {
+    public void deleteCategory(String id) throws IOException, MessagingException {
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         if (!ObjectUtils.isEmpty(category)) {
             category.setSoftDelete(true);
             emailService.sendEmail(emailService.setMailData(
-                    new String[] { "xyz@yopmail.com", "parthdbr@gmail.com"}, "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number()));
+                  "xyz@yopmail.com", "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number()));
 
             categoryRepository.save(category);
         }

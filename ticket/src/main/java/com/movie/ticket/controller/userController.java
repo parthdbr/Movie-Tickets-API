@@ -7,11 +7,13 @@ import com.movie.ticket.exception.*;
 import com.movie.ticket.model.User;
 import com.movie.ticket.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 @RestController
@@ -23,7 +25,7 @@ public class userController {
     UserService userService;
 
     @PostMapping("/book_seats")
-    public DataResponse<User> bookSeats(@RequestBody SeatsDTO seatsDTO) throws DataAvailableException, InvocationTargetException, IllegalAccessException {
+    public DataResponse<User> bookSeats(@RequestBody SeatsDTO seatsDTO) throws DataAvailableException, InvocationTargetException, IllegalAccessException, IOException, MessagingException {
         DataResponse<User> response = new DataResponse<>();
 
 

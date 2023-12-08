@@ -10,6 +10,7 @@ import com.movie.ticket.model.User;
 import com.movie.ticket.repository.AdminCriteriaRepository;
 import com.movie.ticket.service.AdminService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 @Slf4j
@@ -53,7 +55,7 @@ public class adminController {
     }
 
     @PostMapping("/add_category")
-    public DataResponse<Category> addCategory(@RequestBody CategoryDTO categoryDTO) {
+    public DataResponse<Category> addCategory(@RequestBody CategoryDTO categoryDTO) throws IOException, MessagingException {
         DataResponse<Category> response = new DataResponse<>();
         String seatsAvailable = adminCriteriaRepository.checkSeatsAvailable(categoryDTO);
 
@@ -91,7 +93,7 @@ public class adminController {
     }
 
     @PutMapping("/update_category")
-    public DataResponse<Category> updateCategory(@RequestParam String id , @RequestBody CategoryDTO categoryDTO) throws DataAvailableException, InvocationTargetException, IllegalAccessException {
+    public DataResponse<Category> updateCategory(@RequestParam String id , @RequestBody CategoryDTO categoryDTO) throws DataAvailableException, InvocationTargetException, IllegalAccessException, IOException, MessagingException {
         DataResponse<Category> response = new DataResponse<>();
         String seatsAvailable = adminCriteriaRepository.checkSeatsAvailabletoUpdate(categoryDTO, id);
 
@@ -107,7 +109,7 @@ public class adminController {
     }
 
     @DeleteMapping("/delete_category")
-    public DataResponse<Category> deleteCategory(@RequestParam String id) throws DataAvailableException {
+    public DataResponse<Category> deleteCategory(@RequestParam String id) throws DataAvailableException, IOException, MessagingException {
         DataResponse<Category> response = new DataResponse<>();
 
 

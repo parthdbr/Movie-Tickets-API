@@ -8,12 +8,14 @@ import com.movie.ticket.DTO.*;
 import com.movie.ticket.config.NullAwareBeanUtilsBean;
 import com.movie.ticket.service.EmailService;
 import com.movie.ticket.service.UserService;
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User bookseats(@NotNull SeatsDTO seatsDTO) throws InvocationTargetException, IllegalAccessException, DataNotAvailableException {
+    public User bookseats(@NotNull SeatsDTO seatsDTO) throws InvocationTargetException, IllegalAccessException, DataNotAvailableException, IOException, MessagingException {
         User user = userRepository.findByEmailContainingAndSoftDeleteIsFalse(seatsDTO.getEmail());
 
         Category c = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(seatsDTO.getCategory());
@@ -62,11 +64,11 @@ public class UserServiceImpl implements UserService {
                     nullAware.copyProperties(user, seatsDTO);
                     String msg = "Selected seats :\n "+seatsDTO.getCategory()+" "+ seatsDTO.getBooked_seats().toString();
 
-                    EmailDTO emailDTO = emailService.setMailData(new String[] { seatsDTO.getEmail(), "xyz@yopmail.com" },"Your Booked Movie Tickets", msg);
+                    EmailDTO emailDTO = emailService.setMailData( seatsDTO.getEmail(),"Your Booked Movie Tickets", msg);
 
-//                    emailService.sendEmail(new String[] { seatsDTO.getEmail(), "xyz@yopmail.com" }, "", msg);
+                    emailService.sendEmail(emailDTO);
 
-                    rabbitMQProducer.sendMessage(emailDTO);
+//                    rabbitMQProducer.sendMessage(emailDTO);
                     return userRepository.save(user);
                 } else {
                     throw new DataNotAvailableException("User Does not exists");
