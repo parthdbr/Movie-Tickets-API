@@ -50,32 +50,6 @@ public class AdminServiceImpl implements AdminService {
     EmailService emailService;
 
     @Override
-    public User addUser(@NotNull UserDTO userDTO) throws DataAvailableException {
-        User userExists = userRepository.findByEmailContainingAndSoftDeleteIsFalse(userDTO.getEmail());
-
-        if (ObjectUtils.isEmpty(userExists)) {
-
-            User user = modelMapper.map(userDTO, User.class);
-
-
-            if (user.getRoles() == null || user.getRoles().isEmpty()) {
-                user.setRoles(List.of(Role.USER));
-            } else if (user.getRoles().contains(Role.USER)) {
-                user.setRoles(List.of(Role.USER));
-            } else if (user.getRoles().contains(Role.ADMIN)) {
-                user.setRoles(List.of(Role.ADMIN));
-            } else if (new HashSet<>(user.getRoles()).containsAll(List.of(Role.ADMIN, Role.USER))){
-                user.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
-            }
-
-            return userRepository.save(user);
-
-        }else {
-            throw new DataAvailableException("User Already exists with this Email");
-        }
-    }
-
-    @Override
     public Page<User> getAllUser(UserSearchDTO userSearchDTO ) {
 //        Pageable pageable = PageRequest.of(page, size);
         return userCriteriaRepository.findBySoftDeleteIsFalse(userSearchDTO);

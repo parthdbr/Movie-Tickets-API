@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import java.lang.reflect.InvocationTargetException;
 
 public interface AdminService {
-    public User addUser(UserDTO userDTO) throws DataAvailableException;
 
     Page<User> getAllUser(UserSearchDTO userSearchDTO);
 

@@ -60,7 +60,7 @@ public class WebSecurityConfig {
         http.csrf(
                 csrf -> csrf.disable()
         ).authorizeHttpRequests(
-                auth -> auth.requestMatchers("/api/auth/login","/v3/api-docs/**","**/swagger-resources/**","/swagger-ui/**","/webjars/**").permitAll()
+                auth -> auth.requestMatchers("/api/auth/**","/v3/api-docs/**","**/swagger-resources/**","/swagger-ui/**","/webjars/**").permitAll()
                        /* .antMatchers("/api/userdata/**").hasAuthority("ADMIN")*/
                         .anyRequest().authenticated()
 //        ).exceptionHandling(

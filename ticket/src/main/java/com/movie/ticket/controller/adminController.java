@@ -31,17 +31,6 @@ public class adminController {
     @Autowired
     AdminCriteriaRepository adminCriteriaRepository;
 
-
-    @PostMapping("/add_user")
-    public DataResponse<User> addUserData(@RequestBody UserDTO userDTO) throws DataAvailableException {
-        DataResponse<User> response = new DataResponse<>();
-
-                response.setData(adminService.addUser(userDTO));
-                response.setStatus(new Response(HttpStatus.CREATED, "Data Created", "201"));
-
-        return response;
-    }
-
     @PostMapping("/get_users")
     public PageResponse<User> getAllUser(@RequestBody UserSearchDTO userSearchDTO) throws GeneralException{
         PageResponse<User> response = new PageResponse<>();
