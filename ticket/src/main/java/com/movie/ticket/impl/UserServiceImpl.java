@@ -61,8 +61,12 @@ public class UserServiceImpl implements UserService {
                 if (!ObjectUtils.isEmpty(user)) {
                     nullAware.copyProperties(user, seatsDTO);
                     String msg = "Selected seats :\n "+seatsDTO.getCategory()+" "+ seatsDTO.getBooked_seats().toString();
-                    emailService.sendEmail(new String[] { seatsDTO.getEmail(), "xyz@yopmail.com" }, "Your Booked Movie Tickets", msg);
-                    rabbitMQProducer.sendMessage(msg);
+
+                    EmailDTO emailDTO = emailService.setMailData(new String[] { seatsDTO.getEmail(), "xyz@yopmail.com" },"Your Booked Movie Tickets", msg);
+
+//                    emailService.sendEmail(new String[] { seatsDTO.getEmail(), "xyz@yopmail.com" }, "", msg);
+
+                    rabbitMQProducer.sendMessage(emailDTO);
                     return userRepository.save(user);
                 } else {
                     throw new DataNotAvailableException("User Does not exists");

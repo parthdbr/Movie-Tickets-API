@@ -1,5 +1,6 @@
 package com.movie.ticket.RMQ;
 
+import com.movie.ticket.DTO.EmailDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class RabbitMQProducer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void sendMessage(String message){
-        log.info(String.format("Message sent -> %s",message));
-        rabbitTemplate.convertAndSend(exchange,routingKey,message);
+    public void sendMessage(EmailDTO emailDTO){
+//        log.info(String.format("Message sent -> %s",message));
+        rabbitTemplate.convertAndSend(exchange,routingKey,emailDTO);
     }
 }

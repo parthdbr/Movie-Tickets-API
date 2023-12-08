@@ -28,8 +28,8 @@ spring:
 
 rabbitmq:
   queue:
-    name: message-queue
+    name: email-queue
   exchange:
-    name: message-queue-exchange
+    name: email-queue-exchange
   routing:
-    key: message-queue-routing-key
+    key: email-queue-routing-key
