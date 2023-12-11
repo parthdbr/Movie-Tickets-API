@@ -17,5 +17,5 @@ public interface UserRepository  extends MongoRepository<User, String> {
 
     List<User> findByCategoryIgnoreCaseAndSoftDeleteIsFalse(String category);
 
-    List<User> findByIdAndSoftDeleteIsFalse(String id);
+    User findByIdAndSoftDeleteIsFalse(String id);
 }

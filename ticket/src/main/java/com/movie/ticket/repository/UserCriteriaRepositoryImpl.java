@@ -44,24 +44,39 @@ public class UserCriteriaRepositoryImpl implements UserCriteriaRepository {
 
     @Override
     public Page<User> findBySoftDeleteIsFalse(UserSearchDTO data) {
-        Pageable pageable = PageRequest.of(data.getPage(), data.getSize());
+        Pageable pageable;
+        if (data.getPage() != 0 && data.getSize() != 0) {
+            pageable = PageRequest.of(data.getPage(), data.getSize());
+        }else{
+            pageable = PageRequest.of(0,3);
+        }
         Query query = new Query().with(pageable);
 
         Criteria criteria = new Criteria();
 
-        criteria.andOperator(
-                Criteria.where("softDelete").is(false),
-                new Criteria().orOperator(
-                        Criteria.where("first_name").regex(".*" + data.getSearch() + ".*", "i"),
-                        Criteria.where("last_name").regex(".*" + data.getSearch() + ".*", "i"),
-                        Criteria.where("email").regex(".*" + data.getSearch() + ".*", "i")
+        if (data.getSearch() != null) {
 
-                ));
+            criteria.andOperator(
+                    Criteria.where("softDelete").is(false),
+                    new Criteria().orOperator(
+                            Criteria.where("first_name").regex(".*" + data.getSearch() + ".*", "i"),
+                            Criteria.where("last_name").regex(".*" + data.getSearch() + ".*", "i"),
+                            Criteria.where("email").regex(".*" + data.getSearch() + ".*", "i")
+
+                    ));
+        }else{
+            criteria.andOperator(Criteria.where("softDelete").is(false));
+        }
+
         if (data.getCategory() != null) {
             query.addCriteria(Criteria.where("category").is(data.getCategory().toLowerCase()));
         }
 
-        query.addCriteria(criteria).with(Sort.by(Sort.Direction.valueOf(data.getOrder()), data.getField()));
+        if (data.getOrder() != null && data.getField() != null) {
+            query.addCriteria(criteria).with(Sort.by(Sort.Direction.valueOf(data.getOrder()), data.getField()));
+        }else{
+            query.addCriteria(criteria);
+        }
 
         List<User> res = mongoTemplate.find(query, User.class);
 
