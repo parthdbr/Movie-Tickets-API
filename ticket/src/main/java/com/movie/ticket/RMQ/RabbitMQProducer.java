@@ -1,6 +1,7 @@
 package com.movie.ticket.RMQ;
 
 import com.movie.ticket.DTO.EmailDTO;
+import com.movie.ticket.repository.EmailDescRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;

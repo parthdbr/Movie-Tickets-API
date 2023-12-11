@@ -1,14 +1,19 @@
 package com.movie.ticket.impl;
 
+import com.movie.ticket.DTO.EmailDTO;
 import com.movie.ticket.DTO.LoginDTO;
 import com.movie.ticket.DTO.UserDTO;
+import com.movie.ticket.RMQ.RabbitMQProducer;
 import com.movie.ticket.Util.JwtUtil;
 import com.movie.ticket.decorator.AuthResponse;
 import com.movie.ticket.decorator.Response;
 import com.movie.ticket.exception.DataAvailableException;
+import com.movie.ticket.model.Email;
 import com.movie.ticket.model.Role;
 import com.movie.ticket.model.User;
+import com.movie.ticket.repository.EmailDescRepository;
 import com.movie.ticket.repository.UserRepository;
+import com.movie.ticket.service.EmailService;
 import com.movie.ticket.service.JwtAuthenticationService;
 import com.movie.ticket.service.JwtUserDetailService;
 import org.modelmapper.ModelMapper;
@@ -42,6 +47,12 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
 
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    EmailDescRepository emailDescRepository;
+
+    @Autowired
+    RabbitMQProducer rabbitMQProducer;
 
     @Override
     public AuthResponse loginUser(LoginDTO loginDTO) {
@@ -90,6 +101,10 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
             } else if (new HashSet<>(user.getRoles()).containsAll(List.of(Role.ADMIN, Role.USER))){
                 user.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
             }
+
+            EmailDTO emailDTO = modelMapper.map(user, EmailDTO.class);
+            rabbitMQProducer.sendMessage(emailDTO);
+            emailDescRepository.save( modelMapper.map(emailDTO, Email.class));
 
             return userRepository.save(user);
 

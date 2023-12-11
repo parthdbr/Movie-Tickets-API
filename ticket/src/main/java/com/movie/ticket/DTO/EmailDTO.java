@@ -7,12 +7,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmailDTO {
-    String fullName;
-    String from;
-    String cc;
-    String bcc;
-    String replyTo;
-    String email;
     String subject;
-    String text;
+    String first_name;
+    String last_name;
+    String email;
+    String password;
+    boolean SoftDelete;
+    boolean isAllowed;
 }

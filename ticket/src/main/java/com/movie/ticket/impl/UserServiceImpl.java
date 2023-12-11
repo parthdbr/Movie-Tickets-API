@@ -11,6 +11,7 @@ import com.movie.ticket.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -41,6 +42,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RabbitMQProducer rabbitMQProducer;
 
+    @Autowired
+    ModelMapper modelMapper;
+
 
     @Override
     public User bookseats(@NotNull SeatsDTO seatsDTO) throws InvocationTargetException, IllegalAccessException, DataNotAvailableException, IOException, MessagingException {
@@ -62,11 +66,11 @@ public class UserServiceImpl implements UserService {
 
                 if (!ObjectUtils.isEmpty(user)) {
                     nullAware.copyProperties(user, seatsDTO);
-                    String msg = "Selected seats :\n "+seatsDTO.getCategory()+" "+ seatsDTO.getBooked_seats().toString();
 
-                    EmailDTO emailDTO = emailService.setMailData( seatsDTO.getEmail(),"Your Booked Movie Tickets", msg);
+                    User user1 = userRepository.findByEmailContainingAndSoftDeleteIsFalse(seatsDTO.getEmail());
+                    EmailDTO emailDTO = modelMapper.map(user1, EmailDTO.class);
 
-                    emailService.sendEmail(emailDTO);
+//                    emailService.sendEmail(emailDTO);
 
 //                    rabbitMQProducer.sendMessage(emailDTO);
                     return userRepository.save(user);
