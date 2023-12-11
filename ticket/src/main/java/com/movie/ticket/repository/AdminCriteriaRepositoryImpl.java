@@ -4,11 +4,13 @@ import com.movie.ticket.DTO.CategoryDTO;
 import com.movie.ticket.exception.DataNotAvailableException;
 import com.movie.ticket.model.Category;
 import com.movie.ticket.model.User;
+import com.movie.ticket.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
@@ -20,6 +22,11 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+
+    @Autowired
+    private UserRepository userRepository;
+
 
     @Override
     public String checkSeatsAvailable(CategoryDTO categoryDTO) {
@@ -91,5 +98,16 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
 
 
         return null;
+    }
+
+    @Override
+    public User getUserAndAllow(String id, boolean allowed) {
+        User user = userRepository.findByIdAndSoftDeleteIsFalse(id);
+        if (!ObjectUtils.isEmpty(user)) {
+            user.setAllowed(allowed);
+            return userRepository.save(user);
+        }else{
+            return null;
+        }
     }
 }

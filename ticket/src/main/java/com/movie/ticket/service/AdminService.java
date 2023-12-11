@@ -14,6 +14,8 @@ public interface AdminService {
 
     Page<User> getAllUser(UserSearchDTO userSearchDTO);
 
+    User getUserById(String id);
+
     Category addCategory(CategoryDTO categoryDTO) throws DataNotAvailableException, IOException, MessagingException;
 
     Page<Category> getAllCategory(int page, int size);
@@ -31,4 +33,6 @@ public interface AdminService {
     User getUserByEmail(String email);
 
     Category getCategoryById(String id);
+
+    User getUserAndAllow(String id, boolean allowed);
 }

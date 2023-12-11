@@ -12,4 +12,6 @@ public interface AdminCriteriaRepository {
     User getUserByEmail(String email);
 
     String checkSeatsAvailabletoUpdate(CategoryDTO categoryDTO, String id);
+
+    User getUserAndAllow(String id, boolean allowed);
 }

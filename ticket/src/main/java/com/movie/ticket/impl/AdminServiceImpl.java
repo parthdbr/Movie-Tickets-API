@@ -59,6 +59,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public User getUserById(String id) {
+        return userRepository.findByIdAndSoftDeleteIsFalse(id);
+    }
+
+    @Override
     public Category addCategory(CategoryDTO categoryDTO) throws DataAvailableException, IOException, MessagingException {
         Category categoryExists = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(categoryDTO.getName());
         if(ObjectUtils.isEmpty(categoryExists)) {
@@ -147,6 +152,11 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Category getCategoryById(String id) {
         return categoryRepository.findByIdAndSoftDeleteIsFalse(id);
+    }
+
+    @Override
+    public User getUserAndAllow(String id, boolean allowed) {
+        return adminCriteriaRepository.getUserAndAllow(id,allowed);
     }
 
 

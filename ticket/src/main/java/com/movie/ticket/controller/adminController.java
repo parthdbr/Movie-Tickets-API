@@ -54,6 +54,22 @@ public class adminController {
         return response;
     }
 
+    @GetMapping("/Allow_users")
+    public DataResponse<User> AllowUser(@RequestParam String id, @RequestParam boolean allowed) throws GeneralException{
+       DataResponse<User> response = new DataResponse<>();
+
+       User user = adminService.getUserAndAllow(id, allowed);
+
+       if (user != null) {
+           response.setData(user);
+           response.setStatus(new Response(HttpStatus.OK, "Data Updated", "200"));
+       }else{
+           response.setStatus(new Response(HttpStatus.NOT_FOUND, "Data not Found", "204"));
+       }
+
+        return response;
+    }
+
     @PostMapping("/add_category")
     public DataResponse<Category> addCategory(@RequestBody CategoryDTO categoryDTO) throws IOException, MessagingException {
         DataResponse<Category> response = new DataResponse<>();
