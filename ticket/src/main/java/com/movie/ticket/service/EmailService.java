@@ -38,12 +38,8 @@ public class EmailService {
     public void sendEmail(EmailDTO emailDTO) throws MessagingException {
 
         MustacheFactory mf = new DefaultMustacheFactory();
-
-
-        Mustache m = mf.compile(new String("templates/mailTemplate.html".getBytes(), StandardCharsets.UTF_8));
-
+        Mustache m = mf.compile("templates/mailTemplate.html");
         StringWriter sw = new StringWriter();
-
         String messageText = "";
 
         try{
@@ -60,6 +56,7 @@ public class EmailService {
 //        message.setCc(emailDTO.getCc());
 //        message.setBcc(emailDTO.getBcc());
 //        message.setReplyTo(emailDTO.getReplyTo());
+
         helper.setTo(emailDTO.getEmail());
         helper.setSubject(emailDTO.getSubject());
         helper.setText(messageText,true);
