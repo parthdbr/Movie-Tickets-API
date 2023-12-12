@@ -8,6 +8,7 @@ import com.movie.ticket.Util.JwtUtil;
 import com.movie.ticket.decorator.AuthResponse;
 import com.movie.ticket.decorator.Response;
 import com.movie.ticket.exception.DataAvailableException;
+import com.movie.ticket.exception.ValidationException;
 import com.movie.ticket.model.Email;
 import com.movie.ticket.model.Role;
 import com.movie.ticket.model.User;
@@ -86,6 +87,17 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
     @Override
     public User register(UserDTO userDTO)throws DataAvailableException {
         User userExists = userRepository.findByEmailContainingAndSoftDeleteIsFalse(userDTO.getEmail());
+
+        if (!(userDTO.getFirst_name() != null && userDTO.getFirst_name().matches("^[a-zA-Z]*$"))){
+            throw new ValidationException("First Name should contain only alphabets");
+        }
+        if (!(userDTO.getLast_name() != null && userDTO.getLast_name().matches("^[a-zA-Z]*$"))){
+            throw new ValidationException("Last Name should contain only alphabets");
+        }
+        if (!(userDTO.getEmail() != null && userDTO.getEmail().matches("^(.+)@(.+)$"))){
+            throw new ValidationException("Email Name should contain @ followed by .");
+        }
+
 
         if (ObjectUtils.isEmpty(userExists)) {
 

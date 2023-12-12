@@ -1,5 +1,6 @@
 package com.movie.ticket.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.MustacheFactory;
 import com.movie.ticket.DTO.EmailDTO;

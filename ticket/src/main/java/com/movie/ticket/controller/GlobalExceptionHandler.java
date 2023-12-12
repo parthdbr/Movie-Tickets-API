@@ -45,4 +45,14 @@ public class GlobalExceptionHandler {
         return response;
 
     }
+
+
+    @ExceptionHandler(ValidationException.class)
+    public DataResponse<User> validationException(ValidationException validationException) {
+        DataResponse<User> response = new DataResponse<>();
+
+        response.setStatus(new Response(HttpStatus.NOT_ACCEPTABLE, validationException.getMessage(), "406"));
+
+        return response;
+    }
 }
