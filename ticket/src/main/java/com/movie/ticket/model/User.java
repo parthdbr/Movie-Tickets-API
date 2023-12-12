@@ -24,6 +24,7 @@ public class User {
     boolean softDelete;
     boolean isAllowed;
 
+
     @Override
     public String toString(){
         return "FirstName : "+first_name+", LastName "+last_name+", Email : "+email+", Password : "+password+", Roles : "+roles;

@@ -23,7 +23,7 @@ public class RabbitMQConsumer {
 
 //        log.info(String.format("Received message -> %s", message));
 
-        emailService.userRegisterSendEmail(emailDTO);
+        emailService.sendEmail(emailDTO);
 
     }
 }

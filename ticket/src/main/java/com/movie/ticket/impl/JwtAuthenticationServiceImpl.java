@@ -103,6 +103,7 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
             }
 
             EmailDTO emailDTO = modelMapper.map(user, EmailDTO.class);
+            emailDTO.setSubject("New User Registered");
             rabbitMQProducer.sendMessage(emailDTO);
             emailDescRepository.save( modelMapper.map(emailDTO, Email.class));
 
