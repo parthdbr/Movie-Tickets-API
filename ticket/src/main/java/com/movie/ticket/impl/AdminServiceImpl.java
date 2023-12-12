@@ -1,6 +1,7 @@
 package com.movie.ticket.impl;
 
 import com.movie.ticket.DTO.*;
+import com.movie.ticket.RMQ.RabbitMQProducer;
 import com.movie.ticket.decorator.categoryBookedSeats;
 import com.movie.ticket.exception.*;
 import com.movie.ticket.model.*;
@@ -51,6 +52,9 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     EmailService emailService;
 
+    @Autowired
+    RabbitMQProducer rabbitMQProducer;
+
     @Override
     public Page<User> getAllUser(UserSearchDTO userSearchDTO ) {
 //        Pageable pageable = PageRequest.of(page, size);
@@ -69,8 +73,11 @@ public class AdminServiceImpl implements AdminService {
         if(ObjectUtils.isEmpty(categoryExists)) {
 
                 Category category = modelMapper.map(categoryDTO, Category.class);
-//            emailService.sendEmail(emailService.setMailData(
-//                   "xyz@yopmail.com", "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number()));
+
+                EmailDTO<Category> emailDTO = new EmailDTO<>();
+                emailDTO.setSubject("Category Created");
+                emailDTO.setSomeDTO(category);
+                rabbitMQProducer.sendMessage(emailDTO);
 
             return categoryRepository.save(category);
 
@@ -95,9 +102,10 @@ public class AdminServiceImpl implements AdminService {
 
         }
         nullAware.copyProperties(category, categoryDTO);
-//        emailService.sendEmail(emailService.setMailData(
-//                 "xyz@yopmail.com", "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number()));
-
+        EmailDTO<Category> emailDTO = new EmailDTO<>();
+        emailDTO.setSubject("Category Updated");
+        emailDTO.setSomeDTO(category);
+        rabbitMQProducer.sendMessage(emailDTO);
         return categoryRepository.save(category);
     }
 
@@ -106,9 +114,10 @@ public class AdminServiceImpl implements AdminService {
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         if (!ObjectUtils.isEmpty(category)) {
             category.setSoftDelete(true);
-//            emailService.sendEmail(emailService.setMailData(
-//                  "xyz@yopmail.com", "New Category generated", "\nName : "+category.getName()+"\nPrice : "+category.getPrice()+"\nStart : "+category.getStart_seat_number()+"\nEnd : "+category.getEnd_seat_number()));
-
+            EmailDTO<Category> emailDTO = new EmailDTO<>();
+            emailDTO.setSubject("Category Deleted");
+            emailDTO.setSomeDTO(category);
+            rabbitMQProducer.sendMessage(emailDTO);
             categoryRepository.save(category);
         }
     }

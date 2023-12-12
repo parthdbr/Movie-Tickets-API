@@ -1,10 +1,10 @@
 package com.movie.ticket.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.MustacheFactory;
 import com.movie.ticket.DTO.EmailDTO;
-import com.movie.ticket.model.Templates;
+import com.movie.ticket.model.AdminConfig;
+import com.movie.ticket.model.User;
 import com.movie.ticket.repository.EmailDescCriteriaRepository;
 import com.movie.ticket.repository.UserRepository;
 import com.samskivert.mustache.Mustache;
@@ -17,8 +17,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 
 import static org.springframework.util.ResourceUtils.getFile;
 
@@ -34,10 +35,10 @@ public class EmailService {
     @Autowired
     EmailDescCriteriaRepository emailDescCriteriaRepository;
 
+
     @Value("${spring.mail.username}") private String sender;
 
-    public void sendEmail(EmailDTO emailDTO) throws MessagingException, FileNotFoundException {
-
+    public <T> void sendEmail(EmailDTO<T> emailDTO) throws MessagingException, NoSuchFieldException, IllegalAccessException {
 
 
 //        MustacheFactory mf = new DefaultMustacheFactory();
@@ -48,11 +49,11 @@ public class EmailService {
 
         StringWriter sw = new StringWriter();
         String messageText = "";
-        Mustache.compiler().compile(template).execute(emailDTO, sw);
+        Mustache.compiler().compile(template).execute(emailDTO.getSomeDTO(), sw);
         messageText=sw.toString();
 
 //        try{
-//            m.execute(sw, emailDTO).flush();
+//            m.execute(sw, emailDTO.getSomeDTO()).flush();
 //            messageText=sw.toString();
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);

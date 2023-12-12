@@ -2,6 +2,7 @@ package com.movie.ticket.repository;
 
 import com.movie.ticket.model.AdminConfig;
 import com.movie.ticket.model.Templates;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
@@ -11,6 +12,7 @@ import java.util.List;
 
 
 @Component
+@Slf4j
 public class EmailDescCriteriaRepositoryImpl implements EmailDescCriteriaRepository {
 
     @Autowired
@@ -24,21 +26,13 @@ public class EmailDescCriteriaRepositoryImpl implements EmailDescCriteriaReposit
 
         int index=0;
 
-        for (AdminConfig adminConfig1 : adminConfig) {
-            for (Templates templates: adminConfig1.getTemplates()) {
-                if (subject.equals(templates.getSubject())){
-                  index = templates.getSubject().indexOf(subject);
-                  break;
-                }
-            }
+        for (AdminConfig config : adminConfig) {
+            List<Templates> temp = config.getTemplates();
+            for (Templates templates : temp)
+                if (subject.equalsIgnoreCase(templates.getSubject()))
+                    return templates.getTemplate();
         }
 
-        return adminConfig.get(0).getTemplates().get(index).getTemplate();
-
-//        query.addCriteria(Criteria.where("templates.subject").is("New User Registered"));
-//        query.addCriteria(Criteria.where("templates").elemMatch(Criteria.where("subject").is(subject)));
-//        query.fields().include("templates.$");
-
-//
+        return null;
     }
 }

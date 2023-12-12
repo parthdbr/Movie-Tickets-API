@@ -19,7 +19,7 @@ public class RabbitMQConsumer {
     EmailService emailService;
 
     @RabbitListener(queues = {"${rabbitmq.queue.name}"})
-    public void consume(@Payload EmailDTO emailDTO) throws IOException, MessagingException {
+    public <T> void consume(@Payload EmailDTO<T> emailDTO) throws IOException, MessagingException, NoSuchFieldException, IllegalAccessException {
 
 //        log.info(String.format("Received message -> %s", message));
 

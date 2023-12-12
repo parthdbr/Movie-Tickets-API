@@ -14,7 +14,6 @@ import com.movie.ticket.model.Role;
 import com.movie.ticket.model.User;
 import com.movie.ticket.repository.EmailDescRepository;
 import com.movie.ticket.repository.UserRepository;
-import com.movie.ticket.service.EmailService;
 import com.movie.ticket.service.JwtAuthenticationService;
 import com.movie.ticket.service.JwtUserDetailService;
 import org.modelmapper.ModelMapper;
@@ -114,8 +113,10 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
                 user.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
             }
 
-            EmailDTO emailDTO = modelMapper.map(user, EmailDTO.class);
+
+            EmailDTO<User> emailDTO = new EmailDTO<>();
             emailDTO.setSubject("New User Registered");
+            emailDTO.setSomeDTO(user);
             rabbitMQProducer.sendMessage(emailDTO);
             emailDescRepository.save( modelMapper.map(emailDTO, Email.class));
 
