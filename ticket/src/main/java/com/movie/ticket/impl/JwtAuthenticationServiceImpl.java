@@ -60,10 +60,12 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
     @Autowired
     OtpService otpService;
 
+    private int count;
     private Map<String, String> authe = new HashMap<>();
 
     @Override
     public AuthResponse loginUser(LoginDTO loginDTO) {
+        count=0;
         AuthResponse AuthResponse = new AuthResponse();
 
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
@@ -85,7 +87,8 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
 
             } else {
 
-                AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "User login failed", "401"));
+
+                    AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "User login failed", "401"));
             }
 
 
@@ -114,13 +117,21 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
 
                 AuthResponse.setStatus(new Response(HttpStatus.OK, data.get("accessToken").toString(), "200"));
             }else{
-                AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "OTP is incorrect", "401"));
+                if (count<=3) {
+                    AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "OTP is incorrect", "401"));
+                    count++;
+                }else{
+
+                    AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "Your account is blocked", "401"));
+                    user.setActive(false);
+                    userRepository.save(user);
+                    count=0;
+                }
             }
         } else {
 
             AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "User login failed", "401"));
         }
-        authe.remove(username);
         return AuthResponse;
 
     }
