@@ -75,6 +75,7 @@ public class AdminServiceImpl implements AdminService {
                 Category category = modelMapper.map(categoryDTO, Category.class);
 
                 EmailDTO<Category> emailDTO = new EmailDTO<>();
+                emailDTO.setKey("categoryCreation");
                 emailDTO.setSubject("Category Created");
                 emailDTO.setSomeDTO(category);
                 rabbitMQProducer.sendMessage(emailDTO);
@@ -103,6 +104,7 @@ public class AdminServiceImpl implements AdminService {
         }
         nullAware.copyProperties(category, categoryDTO);
         EmailDTO<Category> emailDTO = new EmailDTO<>();
+        emailDTO.setKey("categoryUpdation");
         emailDTO.setSubject("Category Updated");
         emailDTO.setSomeDTO(category);
         rabbitMQProducer.sendMessage(emailDTO);
@@ -115,6 +117,7 @@ public class AdminServiceImpl implements AdminService {
         if (!ObjectUtils.isEmpty(category)) {
             category.setSoftDelete(true);
             EmailDTO<Category> emailDTO = new EmailDTO<>();
+            emailDTO.setKey("categoryDeletion");
             emailDTO.setSubject("Category Deleted");
             emailDTO.setSomeDTO(category);
             rabbitMQProducer.sendMessage(emailDTO);

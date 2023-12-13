@@ -9,9 +9,7 @@ import com.movie.ticket.decorator.AuthResponse;
 import com.movie.ticket.decorator.Response;
 import com.movie.ticket.exception.DataAvailableException;
 import com.movie.ticket.exception.ValidationException;
-import com.movie.ticket.model.Email;
-import com.movie.ticket.model.Role;
-import com.movie.ticket.model.User;
+import com.movie.ticket.model.*;
 import com.movie.ticket.repository.EmailDescRepository;
 import com.movie.ticket.repository.UserRepository;
 import com.movie.ticket.service.JwtAuthenticationService;
@@ -86,7 +84,7 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
     @Override
     public User register(UserDTO userDTO)throws DataAvailableException {
         User userExists = userRepository.findByEmailContainingAndSoftDeleteIsFalse(userDTO.getEmail());
-
+        //validation
         if (!(userDTO.getFirst_name() != null && userDTO.getFirst_name().matches("^[a-zA-Z]*$"))){
             throw new ValidationException("First Name should contain only alphabets");
         }
@@ -96,34 +94,31 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
         if (!(userDTO.getEmail() != null && userDTO.getEmail().matches("^(.+)@(.+)$"))){
             throw new ValidationException("Email Name should contain @ followed by .");
         }
-
-
-        if (ObjectUtils.isEmpty(userExists)) {
-
-            User user = modelMapper.map(userDTO, User.class);
-
-
-            if (user.getRoles() == null || user.getRoles().isEmpty()) {
-                user.setRoles(List.of(Role.USER));
-            } else if (user.getRoles().contains(Role.USER)) {
-                user.setRoles(List.of(Role.USER));
-            } else if (user.getRoles().contains(Role.ADMIN)) {
-                user.setRoles(List.of(Role.ADMIN));
-            } else if (new HashSet<>(user.getRoles()).containsAll(List.of(Role.ADMIN, Role.USER))){
-                user.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
-            }
-
-
-            EmailDTO<User> emailDTO = new EmailDTO<>();
-            emailDTO.setSubject("New User Registered");
-            emailDTO.setSomeDTO(user);
-            rabbitMQProducer.sendMessage(emailDTO);
-            emailDescRepository.save( modelMapper.map(emailDTO, Email.class));
-
-            return userRepository.save(user);
-
-        }else {
+        if (!ObjectUtils.isEmpty(userExists)) {
             throw new DataAvailableException("User Already exists with this Email");
         }
+
+        //Implementation
+        User user = modelMapper.map(userDTO, User.class);
+
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(List.of(Role.USER));
+        } else if (user.getRoles().contains(Role.USER)) {
+            user.setRoles(List.of(Role.USER));
+        } else if (user.getRoles().contains(Role.ADMIN)) {
+            user.setRoles(List.of(Role.ADMIN));
+        } else if (new HashSet<>(user.getRoles()).containsAll(List.of(Role.ADMIN, Role.USER))){
+            user.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
+        }
+        EmailDTO<User> emailDTO = new EmailDTO<>();
+        emailDTO.setKey("userRegistration");
+        emailDTO.setSubject("New User Registered");
+        emailDTO.setSomeDTO(user);
+        rabbitMQProducer.sendMessage(emailDTO);
+        emailDescRepository.save( modelMapper.map(emailDTO, Email.class));
+
+        return userRepository.save(user);
+
+
     }
 }

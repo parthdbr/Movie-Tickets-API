@@ -11,13 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "emailDesc")
-public class Email {
-    String subject;
-    String first_name;
-    String last_name;
-    String email;
-    String password;
-    boolean SoftDelete;
-    boolean isAllowed;
+public class Email<T> {
+    public String subject;
+    T someDTO;
 
 }

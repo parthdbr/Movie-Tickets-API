@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 import static org.springframework.util.ResourceUtils.getFile;
 
@@ -38,13 +39,15 @@ public class EmailService {
 
     @Value("${spring.mail.username}") private String sender;
 
-    public <T> void sendEmail(EmailDTO<T> emailDTO) throws MessagingException, NoSuchFieldException, IllegalAccessException {
+    public <T> void sendEmail(EmailDTO<T> emailDTO) throws MessagingException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException {
 
 
 //        MustacheFactory mf = new DefaultMustacheFactory();
 //        com.github.mustachejava.Mustache m = mf.compile("templates/userRegister.html");
 
-        String template = emailDescCriteriaRepository.findTemplateBySubject(emailDTO.getSubject());
+        String keyVal = emailDTO.getKey();
+
+        String template = emailDescCriteriaRepository.findTemplateBySubject(emailDTO.getSubject(), emailDTO.getKey());
 
 
         StringWriter sw = new StringWriter();

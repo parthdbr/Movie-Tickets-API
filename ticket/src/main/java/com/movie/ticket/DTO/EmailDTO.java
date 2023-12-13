@@ -8,5 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 public class EmailDTO<T> {
     public String subject;
+    String key;
     T someDTO;
 }

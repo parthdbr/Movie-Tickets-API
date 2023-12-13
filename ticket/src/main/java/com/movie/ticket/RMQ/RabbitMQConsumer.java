@@ -10,6 +10,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 @Service
 @Slf4j
@@ -19,7 +20,7 @@ public class RabbitMQConsumer {
     EmailService emailService;
 
     @RabbitListener(queues = {"${rabbitmq.queue.name}"})
-    public <T> void consume(@Payload EmailDTO<T> emailDTO) throws IOException, MessagingException, NoSuchFieldException, IllegalAccessException {
+    public <T> void consume(@Payload EmailDTO<T> emailDTO) throws IOException, MessagingException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException {
 
 //        log.info(String.format("Received message -> %s", message));
 
