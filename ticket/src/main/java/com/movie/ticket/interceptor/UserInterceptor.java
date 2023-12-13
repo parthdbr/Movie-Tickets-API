@@ -36,7 +36,7 @@ public class UserInterceptor implements HandlerInterceptor {
         log.info("{}",request.getHeader("Authorization"));
         log.info("{}",SecurityContextHolder.getContext().getAuthentication().getAuthorities());
 
-        Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+     /*   Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
 
         List<String> roles = new ArrayList<String>();
 
@@ -57,7 +57,7 @@ public class UserInterceptor implements HandlerInterceptor {
             ua.setStatus(new Response(HttpStatus.UNAUTHORIZED, "Role Invalid", "401"));
             response.getWriter().write(mapper.writeValueAsString(ua));
             return false;
-        }
+        }*/
 
         return true;
 
