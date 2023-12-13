@@ -1,5 +1,6 @@
 package com.movie.ticket.impl;
 
+import com.google.common.cache.LoadingCache;
 import com.movie.ticket.DTO.EmailDTO;
 import com.movie.ticket.DTO.LoginDTO;
 import com.movie.ticket.DTO.UserDTO;
@@ -14,6 +15,8 @@ import com.movie.ticket.repository.EmailDescRepository;
 import com.movie.ticket.repository.UserRepository;
 import com.movie.ticket.service.JwtAuthenticationService;
 import com.movie.ticket.service.JwtUserDetailService;
+import com.movie.ticket.service.OtpService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,9 +29,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 
 @Service
+@Slf4j
 public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
 
     @Autowired
@@ -52,24 +57,31 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
     @Autowired
     RabbitMQProducer rabbitMQProducer;
 
+    @Autowired
+    OtpService otpService;
+
+    private Map<String, String> authe = new HashMap<>();
+
     @Override
     public AuthResponse loginUser(LoginDTO loginDTO) {
         AuthResponse AuthResponse = new AuthResponse();
 
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
 
-            User user = userRepository.findByEmailContainingAndSoftDeleteIsFalse(loginDTO.getUsername());
-
             SecurityContextHolder.getContext().setAuthentication(auth);
 
             if (auth.isAuthenticated()) {
-                UserDetails userDetails = userDetailService.loadUserByUsername(loginDTO.getUsername());
-                String token = jwtUtil.generateToken(auth);
-
-                Map<String, Object> data = new HashMap<>();
-                data.put("accessToken", token);
-
-                AuthResponse.setStatus(new Response(HttpStatus.OK, data.get("accessToken").toString(), "200"));
+                authe.put(loginDTO.getUsername(), loginDTO.getPassword());
+                OTP otp = new OTP();
+                otp.setOtp(otpService.genereateOtp(loginDTO.getUsername()));
+                otp.setUsername(loginDTO.getUsername());
+                Email<OTP> email = new Email<>();
+                email.setKey("otpGeneration");
+                email.setSubject("OTP Generated");
+                email.setSomeDTO(otp);
+                rabbitMQProducer.sendMessage(email);
+                emailDescRepository.save(email);
+                AuthResponse.setStatus(new Response(HttpStatus.OK, "OTP Sent", "200"));
 
             } else {
 
@@ -77,6 +89,38 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
             }
 
 
+        return AuthResponse;
+
+    }
+
+    @Override
+    public AuthResponse validate(String username, int otp) throws ExecutionException {
+        AuthResponse AuthResponse = new AuthResponse();
+
+        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, authe.get(username)));
+
+        User user = userRepository.findByEmailContainingAndSoftDeleteIsFalse(username);
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+
+        if (auth.isAuthenticated()) {
+            if (otp == otpService.getOtp(username)) {
+                UserDetails userDetails = userDetailService.loadUserByUsername(username);
+                String token = jwtUtil.generateToken(auth);
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("accessToken", token);
+
+                AuthResponse.setStatus(new Response(HttpStatus.OK, data.get("accessToken").toString(), "200"));
+            }else{
+                AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "OTP is incorrect", "401"));
+            }
+        } else {
+
+            AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "User login failed", "401"));
+        }
+        authe.remove(username);
         return AuthResponse;
 
     }

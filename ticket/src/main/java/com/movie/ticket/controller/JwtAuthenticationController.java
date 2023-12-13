@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api/auth")
@@ -43,6 +45,11 @@ public class JwtAuthenticationController {
     @PostMapping(value = "/login",  produces = "application/json")
     public AuthResponse loginUser(@RequestBody LoginDTO loginDTO) {
         return jwtAuthenticationService.loginUser(loginDTO);
+    }
+
+    @GetMapping(value = "/otp",  produces = "application/json")
+    public AuthResponse loginUser(@RequestParam String username, int otp) throws ExecutionException {
+        return jwtAuthenticationService.validate(username, otp);
     }
 
 
