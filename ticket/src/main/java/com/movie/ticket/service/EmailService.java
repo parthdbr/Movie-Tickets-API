@@ -39,28 +39,24 @@ public class EmailService {
 
     @Value("${spring.mail.username}") private String sender;
 
-    public <T> void sendEmail(EmailDTO<T> emailDTO) throws MessagingException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException {
-
-
-//        MustacheFactory mf = new DefaultMustacheFactory();
-//        com.github.mustachejava.Mustache m = mf.compile("templates/userRegister.html");
+    public <T> void sendEmail(EmailDTO<T> emailDTO) throws MessagingException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IOException {
 
         String keyVal = emailDTO.getKey();
 
         String template = emailDescCriteriaRepository.findTemplateBySubject(emailDTO.getSubject(), emailDTO.getKey());
 
-
         StringWriter sw = new StringWriter();
         String messageText = "";
-        Mustache.compiler().compile(template).execute(emailDTO.getSomeDTO(), sw);
-        messageText=sw.toString();
 
-//        try{
-//            m.execute(sw, emailDTO.getSomeDTO()).flush();
-//            messageText=sw.toString();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        if (template == null ){
+            MustacheFactory mf = new DefaultMustacheFactory();
+            com.github.mustachejava.Mustache m = mf.compile("templates/"+emailDTO.getKey()+".html");
+            m.execute(sw, emailDTO.getSomeDTO()).flush();
+        }else {
+            Mustache.compiler().compile(template).execute(emailDTO.getSomeDTO(), sw);
+        }
+
+        messageText = sw.toString();
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
