@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
 import java.util.List;
 
 @Document(collection = "user")
@@ -18,6 +19,9 @@ public class User {
     String last_name;
     String email;
     String password;
+    int otp;
+    Date expireTime;
+    int count;
     String category;
     List<Integer> booked_seats;
     List<Role> roles;

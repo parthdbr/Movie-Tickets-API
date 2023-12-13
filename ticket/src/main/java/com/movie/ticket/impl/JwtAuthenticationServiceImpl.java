@@ -2,6 +2,7 @@ package com.movie.ticket.impl;
 
 import com.google.common.cache.LoadingCache;
 import com.movie.ticket.DTO.EmailDTO;
+import static java.util.concurrent.TimeUnit.*;
 import com.movie.ticket.DTO.LoginDTO;
 import com.movie.ticket.DTO.UserDTO;
 import com.movie.ticket.RMQ.RabbitMQProducer;
@@ -60,22 +61,28 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
     @Autowired
     OtpService otpService;
 
-    private int count;
+    long MAX_DURATION = MILLISECONDS.convert(3, MINUTES);
+
     private Map<String, String> authe = new HashMap<>();
 
     @Override
     public AuthResponse loginUser(LoginDTO loginDTO) {
-        count=0;
+
         AuthResponse AuthResponse = new AuthResponse();
 
-            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
+        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+        User user = userRepository.findByEmailContainingAndSoftDeleteIsFalse(loginDTO.getUsername());
 
-            if (auth.isAuthenticated()) {
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        if (auth.isAuthenticated()) {
+            if (user.isActive()) {
                 authe.put(loginDTO.getUsername(), loginDTO.getPassword());
+
                 OTP otp = new OTP();
-                otp.setOtp(otpService.genereateOtp(loginDTO.getUsername()));
+                int Otp = otpService.genereateOtp(loginDTO.getUsername());
+                otp.setOtp(Otp);
                 otp.setUsername(loginDTO.getUsername());
                 Email<OTP> email = new Email<>();
                 email.setKey("otpGeneration");
@@ -83,13 +90,19 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
                 email.setSomeDTO(otp);
                 rabbitMQProducer.sendMessage(email);
                 emailDescRepository.save(email);
+                user.setOtp(Otp);
+                user.setExpireTime(new Date());
+                user.setCount(0);
+                userRepository.save(user);
                 AuthResponse.setStatus(new Response(HttpStatus.OK, "OTP Sent", "200"));
-
-            } else {
-
-
-                    AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "User login failed", "401"));
+            }else{
+                AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "Your account is blocked", "401"));
             }
+
+        } else {
+
+                AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "User login failed", "401"));
+        }
 
 
         return AuthResponse;
@@ -98,6 +111,9 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
 
     @Override
     public AuthResponse validate(String username, int otp) throws ExecutionException {
+
+        Date compareDate = new Date();
+
         AuthResponse AuthResponse = new AuthResponse();
 
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, authe.get(username)));
@@ -108,25 +124,34 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
 
 
         if (auth.isAuthenticated()) {
-            if (otp == otpService.getOtp(username)) {
-                UserDetails userDetails = userDetailService.loadUserByUsername(username);
-                String token = jwtUtil.generateToken(auth);
+            if (user.isActive()) {
+                if (otp == user.getOtp()) {
+                    if (compareDate.getTime() - user.getExpireTime().getTime() <= MAX_DURATION) {
+                        UserDetails userDetails = userDetailService.loadUserByUsername(username);
+                        String token = jwtUtil.generateToken(auth);
 
-                Map<String, Object> data = new HashMap<>();
-                data.put("accessToken", token);
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("accessToken", token);
 
-                AuthResponse.setStatus(new Response(HttpStatus.OK, data.get("accessToken").toString(), "200"));
-            }else{
-                if (count<=3) {
-                    AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "OTP is incorrect", "401"));
-                    count++;
-                }else{
+                        AuthResponse.setStatus(new Response(HttpStatus.OK, data.get("accessToken").toString(), "200"));
+                    } else {
+                        AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "OTP Expired", "401"));
 
-                    AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "Your account is blocked", "401"));
-                    user.setActive(false);
-                    userRepository.save(user);
-                    count=0;
+                    }
+                } else {
+
+                    if (user.getCount() <= 3) {
+                        AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "OTP is incorrect", "401"));
+                        user.setCount(user.getCount() + 1);
+                        userRepository.save(user);
+                    } else {
+                        AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "Your account is blocked", "401"));
+                        user.setActive(false);
+                        userRepository.save(user);
+                    }
                 }
+            }else{
+                AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "Your account is blocked", "401"));
             }
         } else {
 
