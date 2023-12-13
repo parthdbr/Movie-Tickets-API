@@ -22,7 +22,7 @@ public class User {
     List<Integer> booked_seats;
     List<Role> roles;
     boolean softDelete;
-    boolean isAllowed;
+    boolean active;
 
 
     @Override

@@ -104,7 +104,7 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
     public User getUserAndAllow(String id, boolean allowed) {
         User user = userRepository.findByIdAndSoftDeleteIsFalse(id);
         if (!ObjectUtils.isEmpty(user)) {
-            user.setAllowed(allowed);
+            user.setActive(allowed);
             return userRepository.save(user);
         }else{
             return null;

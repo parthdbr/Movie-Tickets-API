@@ -19,4 +19,5 @@ public interface UserRepository  extends MongoRepository<User, String> {
 
     User findByIdAndSoftDeleteIsFalse(String id);
 
+    List<User> findByActiveIsFalseAndSoftDeleteIsFalse();
 }

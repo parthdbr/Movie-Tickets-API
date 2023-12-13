@@ -48,7 +48,7 @@ public class UserCriteriaRepositoryImpl implements UserCriteriaRepository {
         if (data.getPage() != 0 && data.getSize() != 0) {
             pageable = PageRequest.of(data.getPage(), data.getSize());
         }else{
-            pageable = PageRequest.of(0,3);
+            pageable = PageRequest.of(0,10);
         }
         Query query = new Query().with(pageable);
 

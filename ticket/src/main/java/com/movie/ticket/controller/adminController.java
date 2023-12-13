@@ -8,6 +8,7 @@ import com.movie.ticket.exception.*;
 import com.movie.ticket.model.Category;
 import com.movie.ticket.model.User;
 import com.movie.ticket.repository.AdminCriteriaRepository;
+import com.movie.ticket.repository.UserRepository;
 import com.movie.ticket.service.AdminService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.mail.MessagingException;
@@ -20,12 +21,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/admin")
 @SecurityRequirement(name = "BearerAuth")
 public class adminController {
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     AdminService adminService;
@@ -179,5 +183,22 @@ public class adminController {
         return response;
 
     }
+
+    @GetMapping("/Not_Active_Users")
+    public ListDataResponse<User> notActive() {
+        ListDataResponse<User> response = new ListDataResponse<>();
+
+        List<User> userList = userRepository.findByActiveIsFalseAndSoftDeleteIsFalse();
+
+        if (userList.isEmpty()) {
+            response.setStatus(new Response(HttpStatus.NOT_FOUND, "Non Active Users are not Available","404"));
+        }else{
+            response.setData(userList);
+            response.setStatus(new Response(HttpStatus.FOUND, "Non Active Users Lists Available","302"));
+        }
+
+        return response;
+    }
+
 
 }
