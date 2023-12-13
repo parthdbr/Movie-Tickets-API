@@ -110,12 +110,12 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
         } else if (new HashSet<>(user.getRoles()).containsAll(List.of(Role.ADMIN, Role.USER))){
             user.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
         }
-        EmailDTO<User> emailDTO = new EmailDTO<>();
+        Email<UserDTO> emailDTO = new Email<>();
         emailDTO.setKey("userRegistration");
         emailDTO.setSubject("New User Registered");
-        emailDTO.setSomeDTO(user);
+        emailDTO.setSomeDTO(userDTO);
         rabbitMQProducer.sendMessage(emailDTO);
-        emailDescRepository.save( modelMapper.map(emailDTO, Email.class));
+        emailDescRepository.save(emailDTO);
 
         return userRepository.save(user);
 

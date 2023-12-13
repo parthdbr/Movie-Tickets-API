@@ -30,6 +30,8 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AdminServiceImpl implements AdminService {
+    @Autowired
+    private EmailDescRepository emailDescRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -74,12 +76,12 @@ public class AdminServiceImpl implements AdminService {
 
                 Category category = modelMapper.map(categoryDTO, Category.class);
 
-                EmailDTO<Category> emailDTO = new EmailDTO<>();
-                emailDTO.setKey("categoryCreation");
-                emailDTO.setSubject("Category Created");
-                emailDTO.setSomeDTO(category);
-                rabbitMQProducer.sendMessage(emailDTO);
-
+                Email<CategoryDTO> email = new Email<>();
+                email.setKey("categoryCreation");
+                email.setSubject("Category Created");
+                email.setSomeDTO(categoryDTO);
+                rabbitMQProducer.sendMessage(email);
+                emailDescRepository.save(email);
             return categoryRepository.save(category);
 
         }else {
@@ -103,11 +105,12 @@ public class AdminServiceImpl implements AdminService {
 
         }
         nullAware.copyProperties(category, categoryDTO);
-        EmailDTO<Category> emailDTO = new EmailDTO<>();
-        emailDTO.setKey("categoryUpdation");
-        emailDTO.setSubject("Category Updated");
-        emailDTO.setSomeDTO(category);
-        rabbitMQProducer.sendMessage(emailDTO);
+        Email<Category> email = new Email<>();
+        email.setKey("categoryUpdation");
+        email.setSubject("Category Updated");
+        email.setSomeDTO(category);
+        rabbitMQProducer.sendMessage(email);
+        emailDescRepository.save( email);
         return categoryRepository.save(category);
     }
 
@@ -116,11 +119,12 @@ public class AdminServiceImpl implements AdminService {
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         if (!ObjectUtils.isEmpty(category)) {
             category.setSoftDelete(true);
-            EmailDTO<Category> emailDTO = new EmailDTO<>();
-            emailDTO.setKey("categoryDeletion");
-            emailDTO.setSubject("Category Deleted");
-            emailDTO.setSomeDTO(category);
-            rabbitMQProducer.sendMessage(emailDTO);
+            Email<Category> email = new Email<>();
+            email.setKey("categoryDeletion");
+            email.setSubject("Category Deleted");
+            email.setSomeDTO(category);
+            rabbitMQProducer.sendMessage(email);
+            emailDescRepository.save( email);
             categoryRepository.save(category);
         }
     }

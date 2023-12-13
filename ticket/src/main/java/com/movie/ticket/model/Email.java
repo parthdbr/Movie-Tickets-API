@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Document(collection = "emailDesc")
 public class Email<T> {
+    String key;
     public String subject;
     T someDTO;
 
