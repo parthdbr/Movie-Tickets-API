@@ -45,11 +45,8 @@ public class UserCriteriaRepositoryImpl implements UserCriteriaRepository {
     @Override
     public Page<User> findBySoftDeleteIsFalse(UserSearchDTO data) {
         Pageable pageable;
-        if (data.getPage() != 0 && data.getSize() != 0) {
-            pageable = PageRequest.of(data.getPage(), data.getSize());
-        }else{
-            pageable = PageRequest.of(0,10);
-        }
+        pageable = PageRequest.of(data.getPage(), data.getSize());
+
         Query query = new Query().with(pageable);
 
         Criteria criteria = new Criteria();
