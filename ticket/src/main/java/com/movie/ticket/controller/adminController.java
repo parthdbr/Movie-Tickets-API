@@ -1,11 +1,13 @@
 package com.movie.ticket.controller;
 
+import com.movie.ticket.Annotation.Access;
 import com.movie.ticket.DTO.CategoryDTO;
 import com.movie.ticket.DTO.UserDTO;
 import com.movie.ticket.DTO.UserSearchDTO;
 import com.movie.ticket.decorator.*;
 import com.movie.ticket.exception.*;
 import com.movie.ticket.model.Category;
+import com.movie.ticket.model.Role;
 import com.movie.ticket.model.User;
 import com.movie.ticket.repository.AdminCriteriaRepository;
 import com.movie.ticket.repository.UserRepository;
@@ -40,6 +42,7 @@ public class adminController {
     AdminCriteriaRepository adminCriteriaRepository;
 
     @PostMapping("/get_users")
+    @Access(roles = Role.ADMIN)
     public PageResponse<User> getAllUser(@RequestBody UserSearchDTO userSearchDTO) throws GeneralException{
         PageResponse<User> response = new PageResponse<>();
 
@@ -61,6 +64,7 @@ public class adminController {
     }
 
     @GetMapping("/Allow_users")
+    @Access(roles = Role.ADMIN)
     public DataResponse<User> AllowUser(@RequestParam String id, @RequestParam boolean allowed) throws GeneralException{
        DataResponse<User> response = new DataResponse<>();
 
@@ -77,6 +81,7 @@ public class adminController {
     }
 
     @PostMapping("/add_category")
+    @Access(roles = Role.ADMIN)
     public DataResponse<Category> addCategory(@RequestBody CategoryDTO categoryDTO) throws IOException, MessagingException {
         DataResponse<Category> response = new DataResponse<>();
         String seatsAvailable = adminCriteriaRepository.checkSeatsAvailable(categoryDTO);
@@ -94,6 +99,7 @@ public class adminController {
     }
 
     @GetMapping("/get_categories")
+    @Access(roles = Role.ADMIN)
     public PageResponse<Category> getAllCategory(int page, int size) throws DataAvailableException {
         PageResponse<Category> response = new PageResponse<>();
         Page<Category> categories = adminService.getAllCategory(page, size);
@@ -115,6 +121,7 @@ public class adminController {
     }
 
     @PutMapping("/update_category")
+    @Access(roles = Role.ADMIN)
     public DataResponse<Category> updateCategory(@RequestParam String id , @RequestBody CategoryDTO categoryDTO) throws DataAvailableException, InvocationTargetException, IllegalAccessException, IOException, MessagingException {
         DataResponse<Category> response = new DataResponse<>();
         String seatsAvailable = adminCriteriaRepository.checkSeatsAvailabletoUpdate(categoryDTO, id);
@@ -131,6 +138,7 @@ public class adminController {
     }
 
     @DeleteMapping("/delete_category")
+    @Access(roles = Role.ADMIN)
     public DataResponse<Category> deleteCategory(@RequestParam String id) throws DataAvailableException, IOException, MessagingException {
         DataResponse<Category> response = new DataResponse<>();
 
@@ -146,6 +154,7 @@ public class adminController {
     }
 
     @GetMapping("/get_category_bookedSeats")
+    @Access(roles = Role.ADMIN)
     public DataResponse<categoryBookedSeats> categoryBookedSeats(@RequestParam String id) {
         DataResponse<categoryBookedSeats> response = new DataResponse<>();
 
@@ -157,6 +166,7 @@ public class adminController {
     }
 
     @GetMapping("/get_user_by_seats_booked")
+    @Access(roles = Role.ADMIN)
     public DataResponse<User> getUserBySeatsBooked(@RequestParam int seatNumber) throws DataNotAvailableException {
         DataResponse<User> response = new DataResponse<>();
 
@@ -167,6 +177,7 @@ public class adminController {
     }
 
     @GetMapping(value = "/find_By_Email", produces = "application/json")
+    @Access(roles = Role.ADMIN)
     public DataResponse<User> getUserByEmail(String id) {
 
         User users = adminService.getUserByEmail(id);
@@ -187,6 +198,7 @@ public class adminController {
     }
 
     @GetMapping("/Not_Active_Users")
+    @Access(roles = Role.ADMIN)
     public ListDataResponse<User> notActive() {
         ListDataResponse<User> response = new ListDataResponse<>();
 
