@@ -1,9 +1,11 @@
 package com.movie.ticket.controller;
 
+import com.movie.ticket.Annotation.Access;
 import com.movie.ticket.DTO.SeatsDTO;
 import com.movie.ticket.decorator.DataResponse;
 import com.movie.ticket.decorator.Response;
 import com.movie.ticket.exception.*;
+import com.movie.ticket.model.Role;
 import com.movie.ticket.model.User;
 import com.movie.ticket.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -27,6 +29,7 @@ public class userController {
     UserService userService;
 
     @PostMapping("/book_seats")
+    @Access(roles = {Role.USER, Role.ADMIN})
     public DataResponse<User> bookSeats(@RequestBody SeatsDTO seatsDTO) throws DataAvailableException, InvocationTargetException, IllegalAccessException, IOException, MessagingException {
         DataResponse<User> response = new DataResponse<>();
 
