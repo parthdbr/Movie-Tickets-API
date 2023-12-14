@@ -26,9 +26,9 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 @SecurityRequirement(name = "BearerAuth")
-@PreAuthorize("hasAuthority('ADMIN')")
+//@PreAuthorize("hasAuthority('ADMIN')")
 public class adminController {
     @Autowired
     private UserRepository userRepository;

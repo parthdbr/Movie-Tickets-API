@@ -8,9 +8,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Component
 public class InterceptorConfig implements WebMvcConfigurer {
     @Autowired
-    UserInterceptor userInterceptor;
+    RoleBasedAccessInterceptor roleBasedAccessInterceptor;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(userInterceptor);
+        registry.addInterceptor(roleBasedAccessInterceptor)
+                .addPathPatterns("/api/**")
+                .excludePathPatterns("/v3/api-docs/**, **/swagger-resources/**, /swagger-ui/**, /webjars/**", "/api/auth/**");
     }
 }

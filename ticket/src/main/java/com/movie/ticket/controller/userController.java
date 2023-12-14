@@ -18,9 +18,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @SecurityRequirement(name = "BearerAuth")
-@PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+//@PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
 public class userController {
 
     @Autowired
