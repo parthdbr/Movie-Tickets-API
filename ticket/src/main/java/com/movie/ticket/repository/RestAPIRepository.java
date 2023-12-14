@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RestAPIRepository extends MongoRepository<RestAPIs, String> {
 
+    RestAPIs findByName(String api);
     boolean existsByName(String name);
 }

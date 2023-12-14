@@ -41,7 +41,7 @@ public class Utils {
         return null;
     }
 
-    private static String getApiName(Method method) {
+    public static String getApiName(Method method) {
         String apiName = null;
 
         if (method.isAnnotationPresent(GetMapping.class))
