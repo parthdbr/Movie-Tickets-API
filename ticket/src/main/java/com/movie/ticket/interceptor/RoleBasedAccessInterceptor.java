@@ -52,15 +52,9 @@ public class RoleBasedAccessInterceptor implements HandlerInterceptor {
             log.info("Method {}" , handlerMethod.getMethod().getName());
             String api = Utils.getApiName(handlerMethod.getMethod());
             RestAPIs restAPIs = restAPIRepository.findByName(api);
-            if (controller.equals("admin") && roles.stream().anyMatch(restAPIs.getRoles()::contains))
-                return true;
-            else if (controller.equals("user") && roles.stream().anyMatch(restAPIs.getRoles()::contains)) {
-              return true;
-            } 
-          /*  if (controller.equals("admin") && roles.contains("ADMIN"))
-                return true;
-            else if (controller.equals("user") && roles.contains("USER"))
-                return true;*/
+            if (restAPIs != null)
+                if (roles.stream().anyMatch(restAPIs.getRoles()::contains))
+                    return true;
         }
         ObjectMapper mapper = new ObjectMapper();
         Unauthorized ua = new Unauthorized();
