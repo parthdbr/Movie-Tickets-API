@@ -1,7 +1,5 @@
 package com.movie.ticket.impl;
 
-import com.google.common.cache.LoadingCache;
-import com.movie.ticket.DTO.EmailDTO;
 import static java.util.concurrent.TimeUnit.*;
 import com.movie.ticket.DTO.LoginDTO;
 import com.movie.ticket.DTO.UserDTO;

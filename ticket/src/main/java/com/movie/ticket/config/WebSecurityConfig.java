@@ -11,8 +11,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -64,10 +62,7 @@ public class WebSecurityConfig {
                 csrf -> csrf.disable()
         ).authorizeHttpRequests(
                 auth -> auth.requestMatchers("/api/auth/**","/v3/api-docs/**","**/swagger-resources/**","/swagger-ui/**","/webjars/**").permitAll()
-                       /* .antMatchers("/api/userdata/**").hasAuthority("ADMIN")*/
                         .anyRequest().authenticated()
-//        ).exceptionHandling(
-//                (exception) -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
         ).sessionManagement(
                 sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );

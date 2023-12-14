@@ -59,9 +59,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Page<User> getAllUser(UserSearchDTO userSearchDTO ) {
-//        Pageable pageable = PageRequest.of(page, size);
         return userCriteriaRepository.findBySoftDeleteIsFalse(userSearchDTO);
-//        return userRepository.findBySoftDeleteIsFalse(pageable);
     }
 
     @Override
@@ -137,7 +135,6 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public categoryBookedSeats categoryBookedSeats(String id) {
         categoryBookedSeats result = new categoryBookedSeats();
-//        result.setCategory(category.toLowerCase(Locale.ROOT));
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         if (category!=null) {
             result.setCategory(category.getName());

@@ -35,8 +35,6 @@ public class JwtAuthenticationController {
         DataResponse<User> response = new DataResponse<>();
 
         response.setData(jwtAuthenticationService.register(userDTO));
-
-//        response.setData(adminService.addUser(userDTO));
         response.setStatus(new Response(HttpStatus.CREATED, "Data Created", "201"));
 
         return response;
