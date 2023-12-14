@@ -37,12 +37,6 @@ public class UserServiceImpl implements UserService {
     UserCriteriaRepository userCriteriaRepository;
 
     @Autowired
-    EmailService emailService;
-
-    @Autowired
-    private RabbitMQProducer rabbitMQProducer;
-
-    @Autowired
     ModelMapper modelMapper;
 
 
@@ -70,9 +64,6 @@ public class UserServiceImpl implements UserService {
                     User user1 = userRepository.findByEmailContainingAndSoftDeleteIsFalse(seatsDTO.getEmail());
                     EmailDTO emailDTO = modelMapper.map(user1, EmailDTO.class);
 
-//                    emailService.sendEmail(emailDTO);
-
-//                    rabbitMQProducer.sendMessage(emailDTO);
                     return userRepository.save(user);
                 } else {
                     throw new DataNotAvailableException("User Does not exists");

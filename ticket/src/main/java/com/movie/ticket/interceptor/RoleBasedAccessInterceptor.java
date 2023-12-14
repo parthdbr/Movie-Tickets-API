@@ -18,7 +18,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-//import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,10 +39,8 @@ public class RoleBasedAccessInterceptor implements HandlerInterceptor {
         for (GrantedAuthority a : authorities) {
             roles.add(a.getAuthority());
         }
-//        log.info("{}", roles);
         if (Handler instanceof HandlerMethod handlerMethod){
             String controller=handlerMethod.getBean().getClass().getSimpleName().replace("Controller", "");
-//            log.info("{}->{}",controller,roles);
             if (controller.equals("admin") && roles.contains("ADMIN"))
                 return true;
             else if (controller.equals("user") && roles.contains("USER"))

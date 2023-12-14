@@ -2,7 +2,6 @@ package com.movie.ticket.controller;
 
 import com.movie.ticket.Annotation.Access;
 import com.movie.ticket.DTO.CategoryDTO;
-import com.movie.ticket.DTO.UserDTO;
 import com.movie.ticket.DTO.UserSearchDTO;
 import com.movie.ticket.decorator.*;
 import com.movie.ticket.exception.*;
@@ -19,7 +18,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;

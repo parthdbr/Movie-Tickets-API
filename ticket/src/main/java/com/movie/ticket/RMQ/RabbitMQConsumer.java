@@ -22,8 +22,6 @@ public class RabbitMQConsumer {
     @RabbitListener(queues = {"${rabbitmq.queue.name}"})
     public <T> void consume(@Payload EmailDTO<T> emailDTO) throws IOException, MessagingException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException {
 
-//        log.info(String.format("Received message -> %s", message));
-
         emailService.sendEmail(emailDTO);
 
     }
