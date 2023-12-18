@@ -27,6 +27,8 @@ public class Category {
 
     boolean softDelete;
 
+    CreationUpdation creationUpdation;
+
 }
 
 

@@ -16,4 +16,5 @@ public class Email<T> {
     public String subject;
     T someDTO;
 
+
 }

@@ -27,6 +27,7 @@ public class User {
     List<Role> roles;
     boolean softDelete;
     boolean active;
+    CreationUpdation creationUpdation;
 
 
     @Override

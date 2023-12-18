@@ -195,6 +195,7 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
         rabbitMQProducer.sendMessage(emailDTO);
         emailDescRepository.save(emailDTO);
 
+
         return userRepository.save(user);
 
 
