@@ -35,4 +35,6 @@ public interface AdminService {
     Category getCategoryById(String id);
 
     User getUserAndAllow(String id, boolean allowed);
+
+    User createUser(UserDTO userDTO);
 }

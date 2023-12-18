@@ -2,6 +2,7 @@ package com.movie.ticket.controller;
 
 import com.movie.ticket.Annotation.Access;
 import com.movie.ticket.DTO.CategoryDTO;
+import com.movie.ticket.DTO.UserDTO;
 import com.movie.ticket.DTO.UserSearchDTO;
 import com.movie.ticket.decorator.*;
 import com.movie.ticket.exception.*;
@@ -38,6 +39,17 @@ public class adminController {
 
     @Autowired
     AdminCriteriaRepository adminCriteriaRepository;
+
+    @PostMapping("/create_user")
+    @Access(roles = Role.ADMIN)
+    public DataResponse<User> addUserData(@RequestBody UserDTO userDTO) throws DataAvailableException {
+        DataResponse<User> response = new DataResponse<>();
+
+        response.setData(adminService.createUser(userDTO));
+        response.setStatus(new Response(HttpStatus.CREATED, "Data Created", "201"));
+
+        return response;
+    }
 
     @PostMapping("/get_users")
     @Access(roles = Role.ADMIN)

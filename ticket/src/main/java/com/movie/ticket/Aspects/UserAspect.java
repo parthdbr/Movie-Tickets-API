@@ -44,19 +44,37 @@ public class UserAspect {
        if (args.length > 0) {
             if (args[0] instanceof User) {
                 User user = userRepository.findByEmailContainingAndSoftDeleteIsFalse(((User) args[0]).getEmail());
-                if (!ObjectUtils.isEmpty(user)){
-                    nullAwareBeanUtilsBean.copyProperties(creationUpdation, ((User) args[0]).getCreationUpdation());
-                    creationUpdation.setUpdatedBy(((User) args[0]).getId());
-                    creationUpdation.setUpdatedAt(new Date());
-                    ((User) args[0]).setCreationUpdation(creationUpdation);
-                    return joinPoint.proceed(args);
+                if (SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
+                    if (!ObjectUtils.isEmpty(user)) {
+                        nullAwareBeanUtilsBean.copyProperties(creationUpdation, ((User) args[0]).getCreationUpdation());
+                        creationUpdation.setUpdatedBy(((User) args[0]).getId());
+                        creationUpdation.setUpdatedAt(new Date());
+                        ((User) args[0]).setCreationUpdation(creationUpdation);
+                        return joinPoint.proceed(args);
+                    } else {
+                        Object obj = joinPoint.proceed();
+                        User newUser = userRepository.findByEmailContainingAndSoftDeleteIsFalse(((User) args[0]).getEmail());
+                        creationUpdation.setCreatedBy(newUser.getId());
+                        creationUpdation.setCreatedAt(new Date());
+                        ((User) args[0]).setCreationUpdation(creationUpdation);
+                        return joinPoint.proceed(args);
+                    }
                 }else{
-                    Object obj = joinPoint.proceed();
-                    User newUser = userRepository.findByEmailContainingAndSoftDeleteIsFalse(((User) args[0]).getEmail());
-                    creationUpdation.setCreatedBy(newUser.getId());
-                    creationUpdation.setCreatedAt(new Date());
-                    ((User) args[0]).setCreationUpdation(creationUpdation);
-                    return joinPoint.proceed(args);
+                    String username = ((UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+                    User newUser = userRepository.findByEmailContainingAndSoftDeleteIsFalse(username);
+                    if (!ObjectUtils.isEmpty(user)) {
+                        nullAwareBeanUtilsBean.copyProperties(creationUpdation, ((User) args[0]).getCreationUpdation());
+                        creationUpdation.setUpdatedBy(newUser.getId());
+                        creationUpdation.setUpdatedAt(new Date());
+                        ((User) args[0]).setCreationUpdation(creationUpdation);
+                        return joinPoint.proceed(args);
+                    } else {
+                        Object obj = joinPoint.proceed();
+                        creationUpdation.setCreatedBy(newUser.getId());
+                        creationUpdation.setCreatedAt(new Date());
+                        ((User) args[0]).setCreationUpdation(creationUpdation);
+                        return joinPoint.proceed(args);
+                    }
                 }
 
             } else if (args[0] instanceof Category) {

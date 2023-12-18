@@ -172,5 +172,45 @@ public class AdminServiceImpl implements AdminService {
         return adminCriteriaRepository.getUserAndAllow(id,allowed);
     }
 
+    @Override
+    public User createUser(UserDTO userDTO) {
+        User userExists = userRepository.findByEmailContainingAndSoftDeleteIsFalse(userDTO.getEmail());
+        //validation
+        if (!(userDTO.getFirst_name() != null && userDTO.getFirst_name().matches("^[a-zA-Z]*$"))){
+            throw new ValidationException("First Name should contain only alphabets");
+        }
+        if (!(userDTO.getLast_name() != null && userDTO.getLast_name().matches("^[a-zA-Z]*$"))){
+            throw new ValidationException("Last Name should contain only alphabets");
+        }
+        if (!(userDTO.getEmail() != null && userDTO.getEmail().matches("^(.+)@(.+)$"))){
+            throw new ValidationException("Email Name should contain @ followed by .");
+        }
+        if (!ObjectUtils.isEmpty(userExists)) {
+            throw new DataAvailableException("User Already exists with this Email");
+        }
+
+        //Implementation
+        User user = modelMapper.map(userDTO, User.class);
+
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(List.of(Role.USER));
+        } else if (user.getRoles().contains(Role.USER)) {
+            user.setRoles(List.of(Role.USER));
+        } else if (user.getRoles().contains(Role.ADMIN)) {
+            user.setRoles(List.of(Role.ADMIN));
+        } else if (new HashSet<>(user.getRoles()).containsAll(List.of(Role.ADMIN, Role.USER))){
+            user.setRoles(Arrays.asList(Role.ADMIN, Role.USER));
+        }
+        Email<UserDTO> emailDTO = new Email<>();
+        emailDTO.setKey("userRegistration");
+        emailDTO.setSubject("New User Registered");
+        emailDTO.setSomeDTO(userDTO);
+        rabbitMQProducer.sendMessage(emailDTO);
+        emailDescRepository.save(emailDTO);
+
+
+        return userRepository.save(user);
+    }
+
 
 }
