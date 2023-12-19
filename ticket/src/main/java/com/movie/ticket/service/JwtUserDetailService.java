@@ -3,6 +3,7 @@ package com.movie.ticket.service;
 
 import com.movie.ticket.model.User;
 import com.movie.ticket.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class JwtUserDetailService implements UserDetailsService {
 
     @Autowired
@@ -26,8 +28,9 @@ public class JwtUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmailContainingAndSoftDeleteIsFalse(username);
+//      log.info("User Details {}", username);
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
+                user.getId(),
                 encoder.encode(user.getPassword()),
                 getAuthority(user)
         );

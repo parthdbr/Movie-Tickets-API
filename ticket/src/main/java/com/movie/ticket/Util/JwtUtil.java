@@ -1,7 +1,10 @@
 package com.movie.ticket.Util;
 
+import com.movie.ticket.JWT.JwtUser;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,12 +29,18 @@ public class JwtUtil implements Serializable {
     public static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60;
 
 
-    Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    @Value("${ticket.key}")
+    Key key;
+//        Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
 
     /* Retrieve UserName from the Token */
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    public String getIdFromToken(String token ) {
+        return getClaimFromToken(token, Claims::getId);
     }
 
 
@@ -58,21 +67,21 @@ public class JwtUtil implements Serializable {
     }
 
     //generate token for user
-    public String generateToken(Authentication authentication) {
+    public String generateToken(JwtUser jwtUser, String id) {
 
-        return doGenerateToken(authentication);
+        return doGenerateToken(jwtUser , id);
     }
 
     // set claims, set subject of a claim, set issued time, set expiration time, define the algorithm
-    private String doGenerateToken(Authentication authentication) {
+    private String doGenerateToken(JwtUser jwtUser, String id) {
 
-        String authorities =  authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
 
-        return Jwts.builder().setSubject(authentication.getName()).claim("Roles",authorities).setIssuedAt(new Date(System.currentTimeMillis()))
+        return Jwts.builder()
+                .setClaims(jwtUser.toClaims())
+                .setSubject(jwtUser.getId())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-                .signWith(key).compact();
+                .signWith(SignatureAlgorithm.HS512, key).compact();
     }
 
     //validate token
@@ -90,7 +99,7 @@ public class JwtUtil implements Serializable {
         final Claims claims = claimsJws.getBody();
 
         final Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("Roles").toString().split(","))
+                Arrays.stream(claims.get("ROLE").toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 

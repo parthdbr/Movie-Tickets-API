@@ -1,8 +1,11 @@
 package com.movie.ticket.impl;
 
+import com.google.common.cache.LoadingCache;
+import com.movie.ticket.DTO.EmailDTO;
 import static java.util.concurrent.TimeUnit.*;
 import com.movie.ticket.DTO.LoginDTO;
 import com.movie.ticket.DTO.UserDTO;
+import com.movie.ticket.JWT.JwtUser;
 import com.movie.ticket.RMQ.RabbitMQProducer;
 import com.movie.ticket.Util.JwtUtil;
 import com.movie.ticket.decorator.AuthResponse;
@@ -22,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -115,7 +120,8 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
         AuthResponse AuthResponse = new AuthResponse();
 
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, authe.get(username)));
-
+//        log.info("Authentication {}", auth.getName());
+//        log.info("Authentication {}", auth.getAuthorities());
         User user = userRepository.findByEmailContainingAndSoftDeleteIsFalse(username);
 
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -125,8 +131,14 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
             if (user.isActive()) {
                 if (otp == user.getOtp()) {
                     if (compareDate.getTime() - user.getExpireTime().getTime() <= MAX_DURATION) {
-                        UserDetails userDetails = userDetailService.loadUserByUsername(username);
-                        String token = jwtUtil.generateToken(auth);
+//                        UserDetails userDetails = userDetailService.loadUserByUsername(username);
+
+                        String authorities =  auth.getAuthorities().stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.joining(","));
+
+
+                        String token = jwtUtil.generateToken(new JwtUser(auth.getName(), null, authorities), user.getId());
 
                         Map<String, Object> data = new HashMap<>();
                         data.put("accessToken", token);
@@ -194,7 +206,6 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
         emailDTO.setSomeDTO(userDTO);
         rabbitMQProducer.sendMessage(emailDTO);
         emailDescRepository.save(emailDTO);
-
 
         return userRepository.save(user);
 

@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Category {
+public class Category extends CreationUpdation{
 
     @Id
     String id;
@@ -27,7 +27,7 @@ public class Category {
 
     boolean softDelete;
 
-    CreationUpdation creationUpdation;
+//    CreationUpdation creationUpdation;
 
 }
 

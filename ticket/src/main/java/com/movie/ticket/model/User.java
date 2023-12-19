@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class User extends CreationUpdation {
     @Id
     String id;
     String first_name;
@@ -27,11 +27,11 @@ public class User {
     List<Role> roles;
     boolean softDelete;
     boolean active;
-    CreationUpdation creationUpdation;
+//    CreationUpdation creationUpdation;
 
 
     @Override
     public String toString(){
-        return "FirstName : "+first_name+", LastName "+last_name+", Email : "+email+", Password : "+password+", Roles : "+roles;
+        return "ID : "+id+", FirstName : "+first_name+", LastName "+last_name+", Email : "+email+", Password : "+password+", Roles : "+roles;
     }
 }

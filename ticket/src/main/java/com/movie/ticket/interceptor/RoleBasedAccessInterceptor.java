@@ -7,6 +7,7 @@ import com.movie.ticket.Util.JwtUtil;
 import com.movie.ticket.Util.Utils;
 import com.movie.ticket.decorator.Response;
 import com.movie.ticket.decorator.Unauthorized;
+import com.movie.ticket.exception.DataNotAvailableException;
 import com.movie.ticket.model.RestAPIs;
 import com.movie.ticket.repository.RestAPIRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,14 +57,9 @@ public class RoleBasedAccessInterceptor implements HandlerInterceptor {
                 if (roles.stream().anyMatch(restAPIs.getRoles()::contains))
                     return true;
         }
-        ObjectMapper mapper = new ObjectMapper();
-        Unauthorized ua = new Unauthorized();
-        response.setContentType("application/text");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        ua.setStatus(new Response(HttpStatus.UNAUTHORIZED, "Role Invalid", "401"));
-        response.getWriter().write(mapper.writeValueAsString(ua));
 
-        return false;
+        throw new DataNotAvailableException("Access Deniend");
+
     }
 
     @Override
