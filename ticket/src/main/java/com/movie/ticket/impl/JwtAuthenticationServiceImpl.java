@@ -138,7 +138,8 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
                                 .collect(Collectors.joining(","));
 
 
-                        String token = jwtUtil.generateToken(new JwtUser(auth.getName(), null, authorities), user.getId());
+                        String token;
+                        token = jwtUtil.generateToken(new JwtUser(auth.getName(), null, authorities), user.getId());
 
                         Map<String, Object> data = new HashMap<>();
                         data.put("accessToken", token);

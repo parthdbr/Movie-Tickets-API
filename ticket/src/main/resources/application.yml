@@ -28,6 +28,8 @@ spring:
   mustache:
     prefix: classpath:/templates/
     suffix: .html
+  ticket:
+    key: 6nw8UcoID9qUVRJaNHb/yE+yuTgWf5aTBYTR0kVIwJqswmwTED8XsmDB+DvRqQ/C+J4E6UX3bxctTEJ7CRL3lA==
 
 rabbitmq:
   queue:
@@ -36,3 +38,5 @@ rabbitmq:
     name: email-queue-exchange
   routing:
     key: email-queue-routing-key
+
+
