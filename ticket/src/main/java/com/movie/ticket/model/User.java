@@ -20,8 +20,8 @@ public class User extends CreationUpdation {
     String email;
     String password;
     int otp;
-    Date expireTime;
-    int count;
+    Date generateOtpTime;
+    int otpCount;
     String category;
     List<Integer> booked_seats;
     List<Role> roles;

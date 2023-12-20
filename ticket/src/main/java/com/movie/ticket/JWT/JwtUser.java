@@ -22,6 +22,8 @@ public class JwtUser {
 
     @Autowired
     private Environment env;
+    @Value("${spring.ticket.key}")
+    private String key;
 
     public JwtUser(String name, String seesion_id, String authorities) {
         this.id = name;
@@ -49,23 +51,10 @@ public class JwtUser {
 
     }
 
-    public Claims getCliams(String token) {
-        return Jwts.parser().setSigningKey(getKey()).parseClaimsJws(token).getBody();
+    /*
+    public JwtUser formClaims(Claims claims) {
     }
-
-    public String getKey(){
-        String key = env.getProperty("spring.ticket.key");
-        return getBase64(key);
-    }
-
-    private String getBase64(String key) {
-        //SecretKey keyValue = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-        //log.info("key value :{}", keyValue.toString());
-        byte[] secret = Base64.getEncoder().encode(key.getBytes());
-//        log.info("log Scret key bytes {}", new String(secret));
-        return new String(secret);
-    }
-
+*/
 
 
 

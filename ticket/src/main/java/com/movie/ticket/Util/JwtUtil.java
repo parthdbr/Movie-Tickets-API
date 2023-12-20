@@ -60,9 +60,15 @@ public class JwtUtil implements Serializable {
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = jwtUser.getCliams(token);
+        final Claims claims = getAllClaimsFromToken(token);
         //getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
+    }
+
+
+    /* To get a All Claims */
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser().setSigningKey(getBase64(key)).parseClaimsJws(token.replace("{", "").replace("}", "")).getBody();
     }
 
     //check if the token has expired

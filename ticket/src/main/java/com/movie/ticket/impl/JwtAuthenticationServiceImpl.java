@@ -94,8 +94,8 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
                 rabbitMQProducer.sendMessage(email);
                 emailDescRepository.save(email);
                 user.setOtp(Otp);
-                user.setExpireTime(new Date());
-                user.setCount(0);
+                user.setGenerateOtpTime(new Date());
+                user.setOtpCount(0);
                 userRepository.save(user);
                 AuthResponse.setStatus(new Response(HttpStatus.OK, "OTP Sent", "200"));
             }else{
@@ -130,7 +130,7 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
         if (auth.isAuthenticated()) {
             if (user.isActive()) {
                 if (otp == user.getOtp()) {
-                    if (compareDate.getTime() - user.getExpireTime().getTime() <= MAX_DURATION) {
+                    if (compareDate.getTime() - user.getGenerateOtpTime().getTime() <= MAX_DURATION) {
 //                        UserDetails userDetails = userDetailService.loadUserByUsername(username);
 
                         String authorities =  auth.getAuthorities().stream()
@@ -151,9 +151,9 @@ public class JwtAuthenticationServiceImpl implements JwtAuthenticationService {
                     }
                 } else {
 
-                    if (user.getCount() <= 3) {
+                    if (user.getOtpCount() <= 3) {
                         AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "OTP is incorrect", "401"));
-                        user.setCount(user.getCount() + 1);
+                        user.setOtpCount(user.getOtpCount() + 1);
                         userRepository.save(user);
                     } else {
                         AuthResponse.setStatus(new Response(HttpStatus.UNAUTHORIZED, "Your account is blocked", "401"));

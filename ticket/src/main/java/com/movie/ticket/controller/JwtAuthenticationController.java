@@ -45,8 +45,8 @@ public class JwtAuthenticationController {
         return jwtAuthenticationService.loginUser(loginDTO);
     }
 
-    @GetMapping(value = "/otp",  produces = "application/json")
-    public AuthResponse loginUser(@RequestParam String username, int otp) throws ExecutionException {
+    @GetMapping(value = "/otpValidate",  produces = "application/json")
+    public AuthResponse OtpValidate(@RequestParam String username, int otp) throws ExecutionException {
         return jwtAuthenticationService.validate(username, otp);
     }
 
