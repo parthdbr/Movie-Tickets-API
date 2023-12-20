@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +59,15 @@ public class StreamRepositoryImpl implements StreamRepository{
                 .distinct()
                 .sorted(Comparator.comparing(User::getEmail, Comparator.reverseOrder()))
                 .collect(Collectors.groupingBy(User::getEmail));
+    }
+
+    @Override
+    public Map<?, ?> adultUsers() {
+        List<User> userList = mongoTemplate.findAll(User.class);
+        return userList.stream()
+                .sorted(Comparator.comparing(user -> Period.between(user.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears() ))
+                .filter(user -> Period.between(user.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears() >= 18)
+                .collect(Collectors.groupingBy(User::getFirst_name));
     }
 
 

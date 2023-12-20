@@ -12,4 +12,6 @@ public interface StreamRepository {
     Map<?,?> sortUsersByBirthdate();
 
     Map<?,?> collectByEmail();
+
+    Map<?,?> adultUsers();
 }

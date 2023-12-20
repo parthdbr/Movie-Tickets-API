@@ -57,5 +57,13 @@ public class streamsController {
 
     }
 
+    @GetMapping("/adult_users")
+    @Access(roles = Role.ADMIN)
+    public Map<?, ?> adultUsers(){
+        return streamRepository.adultUsers();
+
+    }
+
+
 
 }
