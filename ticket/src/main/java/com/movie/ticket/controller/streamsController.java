@@ -36,6 +36,12 @@ public class streamsController {
 
     }
 
+    @GetMapping("/country_state_city_wise")
+    @Access(roles = Role.ADMIN)
+    public Map<?, ?> country_state_city_wise(){
+        return streamRepository.findUsersCountryAndStateAndCityWise();
+
+    }
 
 
 }

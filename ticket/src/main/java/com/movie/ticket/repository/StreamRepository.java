@@ -6,4 +6,6 @@ public interface StreamRepository {
     Map<?,?> findUsersCityWise();
 
     Map<?,?> findUsersStateAndCityWise();
+
+    Map<?,?> findUsersCountryAndStateAndCityWise();
 }
