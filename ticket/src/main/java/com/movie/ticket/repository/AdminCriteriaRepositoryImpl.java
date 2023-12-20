@@ -5,6 +5,7 @@ import com.movie.ticket.exception.DataNotAvailableException;
 import com.movie.ticket.model.Category;
 import com.movie.ticket.model.User;
 import com.movie.ticket.service.AdminService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -13,8 +14,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
 
     @Autowired
@@ -30,23 +34,21 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
 
     @Override
     public String checkSeatsAvailable(CategoryDTO categoryDTO) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("softDelete").is(false));
-        List<Category> categories = mongoTemplate.find(query,Category.class);
-        String start = categoryDTO.getStart_seat_number();
-        String end = categoryDTO.getEnd_seat_number();
-        for(Category i : categories) {
 
-            if ((Integer.parseInt(start) >= Integer.parseInt(i.getStart_seat_number()) && Integer.parseInt(start) <= Integer.parseInt(i.getEnd_seat_number()))
-            || (Integer.parseInt(end) >=Integer.parseInt(i.getStart_seat_number()) && Integer.parseInt(end)<=Integer.parseInt(i.getEnd_seat_number()))){
-                return i.getName();
-            }
+        List<Category> categories = mongoTemplate.findAll(Category.class);
 
-        }
+        int start = Integer.parseInt(categoryDTO.getStart_seat_number());
+        int end = Integer.parseInt(categoryDTO.getEnd_seat_number());
 
+        return categories.stream()
+                .filter(category -> !category.isSoftDelete())
+                .filter(category ->
+                        (start >= Integer.parseInt(category.getStart_seat_number()) && start <= Integer.parseInt(category.getEnd_seat_number())) ||
+                                (end >= Integer.parseInt(category.getStart_seat_number()) && end <= Integer.parseInt(category.getEnd_seat_number())))
+                .map(Category::getName)
+                .findFirst()
+                .orElse(null);
 
-
-        return null;
     }
 
     @Override
@@ -66,43 +68,20 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
 
     @Override
     public User getUserByEmail(String email) {
-        Query query = new Query();
 
-        query.addCriteria(Criteria.where("email").is(email).and("softDelete").ne(true));
+//        List<User> userList = mongoTemplate.findAll(User.class);
 
-        return mongoTemplate.findOne(query, User.class);
+        return (mongoTemplate.findAll(User.class)).stream()
+                .filter(p -> p.getEmail().equals(email))
+                .filter(p -> !p.isSoftDelete()).findAny().orElse(null);
+
     }
 
-    @Override
-    public String checkSeatsAvailabletoUpdate(CategoryDTO categoryDTO, String id) {
-
-        Query query = new Query();
-
-        query.addCriteria(Criteria.where("id").ne(id).and("softDelete").is(false));
-
-
-        List<Category> categories = mongoTemplate.find(query, Category.class);
-
-        String start = categoryDTO.getStart_seat_number();
-        String end = categoryDTO.getEnd_seat_number();
-
-        for(Category i : categories) {
-
-            if ((Integer.parseInt(start) >= Integer.parseInt(i.getStart_seat_number()) && Integer.parseInt(start) <= Integer.parseInt(i.getEnd_seat_number()))
-                    || (Integer.parseInt(end)>=Integer.parseInt(i.getStart_seat_number()) && Integer.parseInt(end)<=Integer.parseInt(i.getEnd_seat_number()))){
-                return i.getName();
-            }
-
-        }
-
-
-
-        return null;
-    }
 
     @Override
     public User getUserAndAllow(String id, boolean allowed) {
         User user = userRepository.findByIdAndSoftDeleteIsFalse(id);
+
         if (!ObjectUtils.isEmpty(user)) {
             user.setActive(allowed);
             return userRepository.save(user);

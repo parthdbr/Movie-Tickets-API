@@ -30,10 +30,16 @@ public class ApplicationStartUpEventListner {
     }
 
     private void saveIfNotExits(List<RestAPIs> apis){
+        apis.forEach(
+                restAPIs -> {
+                    if (!restAPIRepository.existsByName(restAPIs.getName()))
+                        restAPIRepository.insert(restAPIs);
+                }
+        );/*
         for (RestAPIs restAPIs : apis) {
             if (!restAPIRepository.existsByName(restAPIs.getName())){
                 restAPIRepository.insert(restAPIs);
             }
-        }
+        }*/
     }
 }
