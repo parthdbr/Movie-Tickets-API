@@ -14,4 +14,6 @@ public interface StreamRepository {
     Map<?,?> collectByEmail();
 
     Map<?,?> adultUsers();
+
+    Map<?,?> uniqueCityNames();
 }

@@ -12,6 +12,7 @@ import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -68,6 +69,16 @@ public class StreamRepositoryImpl implements StreamRepository{
                 .sorted(Comparator.comparing(user -> Period.between(user.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears() ))
                 .filter(user -> Period.between(user.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears() >= 18)
                 .collect(Collectors.groupingBy(User::getFirst_name));
+    }
+
+    @Override
+    public Map<?, ?> uniqueCityNames() {
+        List<User> userList = mongoTemplate.findAll(User.class);
+        return userList.stream()
+                .map(User::getCity)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toMap(city -> city, city -> true));
     }
 
 

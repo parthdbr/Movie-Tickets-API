@@ -64,6 +64,13 @@ public class streamsController {
 
     }
 
+    @GetMapping("/unique_city_names")
+    @Access(roles = Role.ADMIN)
+    public Map<?, ?> cityNames(){
+        return streamRepository.uniqueCityNames();
+
+    }
+
 
 
 }
