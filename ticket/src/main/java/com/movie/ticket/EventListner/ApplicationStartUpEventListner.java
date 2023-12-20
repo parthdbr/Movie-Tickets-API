@@ -2,6 +2,7 @@ package com.movie.ticket.EventListner;
 
 import com.movie.ticket.Util.Utils;
 import com.movie.ticket.controller.adminController;
+import com.movie.ticket.controller.streamsController;
 import com.movie.ticket.controller.userController;
 import com.movie.ticket.model.RestAPIs;
 import com.movie.ticket.repository.RestAPIRepository;
@@ -27,6 +28,7 @@ public class ApplicationStartUpEventListner {
 
         saveIfNotExits(Utils.getAllMethodNames(adminController.class));
         saveIfNotExits(Utils.getAllMethodNames(userController.class));
+        saveIfNotExits(Utils.getAllMethodNames(streamsController.class));
     }
 
     private void saveIfNotExits(List<RestAPIs> apis){
