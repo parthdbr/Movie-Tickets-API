@@ -8,4 +8,6 @@ public interface StreamRepository {
     Map<?,?> findUsersStateAndCityWise();
 
     Map<?,?> findUsersCountryAndStateAndCityWise();
+
+    Map<?,?> sortUsersByBirthdate();
 }

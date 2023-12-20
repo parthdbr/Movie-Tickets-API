@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,4 +39,15 @@ public class StreamRepositoryImpl implements StreamRepository{
         return userList.stream()
                 .collect(Collectors.groupingBy(User::getCountry, Collectors.groupingBy(User::getState, Collectors.groupingBy(User::getCity))));
     }
+
+    @Override
+    public Map<?, ?> sortUsersByBirthdate() {
+        List<User> userList = mongoTemplate.findAll(User.class);
+        return userList.stream()
+                .sorted(Comparator.nullsLast(Comparator.comparing(User::getBirthdate))
+                        .thenComparing(Comparator.nullsLast(Comparator.comparing(User::getFirst_name))))
+                .collect(Collectors.groupingBy(User::getFirst_name));
+    }
+
+
 }

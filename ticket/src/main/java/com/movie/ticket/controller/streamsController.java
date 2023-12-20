@@ -43,5 +43,12 @@ public class streamsController {
 
     }
 
+    @GetMapping("/sort_by_birthdate")
+    @Access(roles = Role.ADMIN)
+    public Map<?, ?> sort_by_birthdate(){
+        return streamRepository.sortUsersByBirthdate();
+
+    }
+
 
 }
