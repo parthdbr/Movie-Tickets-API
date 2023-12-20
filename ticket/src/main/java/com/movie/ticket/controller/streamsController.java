@@ -50,5 +50,12 @@ public class streamsController {
 
     }
 
+    @GetMapping("/collect_by_Email")
+    @Access(roles = Role.ADMIN)
+    public Map<?, ?> collectByEmail(){
+        return streamRepository.collectByEmail();
+
+    }
+
 
 }

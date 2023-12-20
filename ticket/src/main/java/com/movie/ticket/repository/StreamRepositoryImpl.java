@@ -49,5 +49,14 @@ public class StreamRepositoryImpl implements StreamRepository{
                 .collect(Collectors.groupingBy(User::getFirst_name));
     }
 
+    @Override
+    public Map<?, ?> collectByEmail() {
+        List<User> userList = mongoTemplate.findAll(User.class);
+        return userList.stream()
+                .distinct()
+                .sorted(Comparator.comparing(User::getEmail, Comparator.reverseOrder()))
+                .collect(Collectors.groupingBy(User::getEmail));
+    }
+
 
 }
