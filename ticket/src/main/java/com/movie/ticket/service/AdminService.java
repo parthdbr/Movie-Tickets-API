@@ -37,4 +37,6 @@ public interface AdminService {
     User getUserAndAllow(String id, boolean allowed);
 
     User createUser(UserDTO userDTO);
+
+    User updateUser(String id, UserDTO userDTO) throws InvocationTargetException, IllegalAccessException;
 }

@@ -2,6 +2,8 @@ package com.movie.ticket.DTO;
 
 import lombok.*;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -11,4 +13,8 @@ public class UserDTO {
     String last_name;
     String email;
     String password;
+    String country;
+    String state;
+    String city;
+    Date birthdate;
 }

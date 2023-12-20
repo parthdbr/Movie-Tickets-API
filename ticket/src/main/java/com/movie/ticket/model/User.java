@@ -19,6 +19,10 @@ public class User extends CreationUpdation {
     String last_name;
     String email;
     String password;
+    String country;
+    String state;
+    String city;
+    Date birthdate;
     int otp;
     Date generateOtpTime;
     int otpCount;

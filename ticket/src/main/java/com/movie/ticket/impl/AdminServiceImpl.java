@@ -113,6 +113,23 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public User updateUser(String id, UserDTO userDTO) throws InvocationTargetException, IllegalAccessException {
+        User user = userRepository.findByIdAndSoftDeleteIsFalse(id);
+        if (user == null)
+            throw new DataNotAvailableException("User not found!");
+        nullAware.copyProperties(user, userDTO);
+        Email<UserDTO> emailDTO = new Email<>();
+        emailDTO.setKey("userUpdation");
+        emailDTO.setSubject("User Updated");
+        emailDTO.setSomeDTO(userDTO);
+        rabbitMQProducer.sendMessage(emailDTO);
+        emailDescRepository.save(emailDTO);
+        return userRepository.save(user);
+
+    }
+
+
+    @Override
     public void deleteCategory(String id) throws IOException, MessagingException {
         Category category = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
         if (!ObjectUtils.isEmpty(category)) {
@@ -211,6 +228,7 @@ public class AdminServiceImpl implements AdminService {
 
         return userRepository.save(user);
     }
+
 
 
 }

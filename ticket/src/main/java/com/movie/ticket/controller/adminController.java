@@ -134,15 +134,26 @@ public class adminController {
     @Access(roles = Role.ADMIN)
     public DataResponse<Category> updateCategory(@RequestParam String id , @RequestBody CategoryDTO categoryDTO) throws DataAvailableException, InvocationTargetException, IllegalAccessException, IOException, MessagingException {
         DataResponse<Category> response = new DataResponse<>();
-        String seatsAvailable = adminCriteriaRepository.checkSeatsAvailabletoUpdate(categoryDTO, id);
+        String seatsOccupiedByCategory = adminCriteriaRepository.checkSeatsAvailable(categoryDTO);
 
 
-            if (seatsAvailable == null) {
+            if (seatsOccupiedByCategory == null) {
                 response.setData(adminService.updateCategory(id, categoryDTO));
                 response.setStatus(new Response(HttpStatus.ACCEPTED, "Data Updated", "200"));
             }else{
-                response.setStatus(new Response(HttpStatus.NO_CONTENT, "Seats are occupied by "+seatsAvailable+" category", "204"));
+                response.setStatus(new Response(HttpStatus.NO_CONTENT, "Seats are occupied by "+seatsOccupiedByCategory+" category", "204"));
             }
+
+        return response;
+    }
+
+    @PutMapping("/update_user")
+    @Access(roles = Role.ADMIN)
+    public DataResponse<User> updateUser(@RequestParam String id , @RequestBody UserDTO userDTO) throws DataAvailableException, InvocationTargetException, IllegalAccessException, IOException, MessagingException {
+        DataResponse<User> response = new DataResponse<>();
+
+            response.setData(adminService.updateUser(id, userDTO));
+            response.setStatus(new Response(HttpStatus.ACCEPTED, "Data Updated", "200"));
 
         return response;
     }
@@ -188,9 +199,9 @@ public class adminController {
 
     @GetMapping(value = "/find_By_Email", produces = "application/json")
     @Access(roles = Role.ADMIN)
-    public DataResponse<User> getUserByEmail(String id) {
+    public DataResponse<User> getUserByEmail(String email) {
 
-        User users = adminService.getUserByEmail(id);
+        User users = adminService.getUserByEmail(email);
         DataResponse<User> response = new DataResponse<>();
             if (users != null) {
                 if (!ObjectUtils.isEmpty(users)) {
