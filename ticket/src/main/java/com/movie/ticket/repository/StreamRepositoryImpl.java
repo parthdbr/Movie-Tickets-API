@@ -24,4 +24,11 @@ public class StreamRepositoryImpl implements StreamRepository{
                 .collect(Collectors.groupingBy(User::getCity));
 
     }
+
+    @Override
+    public Map<?, ?> findUsersStateAndCityWise() {
+        List<User> userList = mongoTemplate.findAll(User.class);
+        return userList.stream()
+                .collect(Collectors.groupingBy(User::getState, Collectors.groupingBy(User::getCity)));
+    }
 }

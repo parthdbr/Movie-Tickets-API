@@ -25,9 +25,17 @@ public class streamsController {
     @GetMapping("/city_wise")
     @Access(roles = Role.ADMIN)
     public Map<?, ?> city_wise(){
-        log.info("city wise");
         return streamRepository.findUsersCityWise();
 
     }
+
+    @GetMapping("/state_city_wise")
+    @Access(roles = Role.ADMIN)
+    public Map<?, ?> state_city_wise(){
+        return streamRepository.findUsersStateAndCityWise();
+
+    }
+
+
 
 }
