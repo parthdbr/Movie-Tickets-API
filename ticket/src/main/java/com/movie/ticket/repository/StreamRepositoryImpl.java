@@ -1,6 +1,7 @@
 package com.movie.ticket.repository;
 
 import com.movie.ticket.model.User;
+import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -23,7 +24,7 @@ public class StreamRepositoryImpl implements StreamRepository{
     MongoTemplate mongoTemplate;
 
     @Override
-    public Map<?, ?> findUsersCityWise() {
+    public Map<String, List<User>> findUsersCityWise() {
         List<User> userList = mongoTemplate.findAll(User.class);
         return userList.stream()
                 .collect(Collectors.groupingBy(User::getCity));
@@ -31,21 +32,27 @@ public class StreamRepositoryImpl implements StreamRepository{
     }
 
     @Override
-    public Map<?, ?> findUsersStateAndCityWise() {
+    public Map<Pair<String,String>, List<User>> findUsersStateAndCityWise() {
         List<User> userList = mongoTemplate.findAll(User.class);
         return userList.stream()
-                .collect(Collectors.groupingBy(User::getState, Collectors.groupingBy(User::getCity)));
+                .collect(Collectors.groupingBy(user ->
+                        new Pair<>(user.getState(), user.getCity()),
+                        Collectors.toList()));
     }
 
     @Override
-    public Map<?, ?> findUsersCountryAndStateAndCityWise() {
+    public Map<Pair<String, Pair<String,String>>, List<User>>  findUsersCountryAndStateAndCityWise() {
         List<User> userList = mongoTemplate.findAll(User.class);
         return userList.stream()
-                .collect(Collectors.groupingBy(User::getCountry, Collectors.groupingBy(User::getState, Collectors.groupingBy(User::getCity))));
+                .collect(Collectors.groupingBy(user ->
+                        new Pair<>(
+                                user.getCountry(),
+                                new Pair<>(user.getState(), user.getCity())),
+                        Collectors.toList()));
     }
 
     @Override
-    public Map<?, ?> sortUsersByBirthdate() {
+    public Map<String, List<User>> sortUsersByBirthdate() {
         List<User> userList = mongoTemplate.findAll(User.class);
         return userList.stream()
                 .sorted(Comparator.nullsLast(Comparator.comparing(User::getBirthdate))
@@ -54,7 +61,7 @@ public class StreamRepositoryImpl implements StreamRepository{
     }
 
     @Override
-    public Map<?, ?> collectByEmail() {
+    public Map<String, List<User>> collectByEmail() {
         List<User> userList = mongoTemplate.findAll(User.class);
         return userList.stream()
                 .distinct()
@@ -63,7 +70,7 @@ public class StreamRepositoryImpl implements StreamRepository{
     }
 
     @Override
-    public Map<?, ?> adultUsers() {
+    public Map<String, List<User>> adultUsers() {
         List<User> userList = mongoTemplate.findAll(User.class);
         return userList.stream()
                 .sorted(Comparator.comparing(user -> Period.between(user.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears() ))
@@ -72,11 +79,11 @@ public class StreamRepositoryImpl implements StreamRepository{
     }
 
     @Override
-    public Map<?, ?> uniqueCityNames() {
+    public Map<String, Boolean> uniqueCityNames() {
         List<User> userList = mongoTemplate.findAll(User.class);
         return userList.stream()
-                .map(User::getCity)
                 .filter(Objects::nonNull)
+                .map(User::getCity)
                 .distinct()
                 .collect(Collectors.toMap(city -> city, city -> true));
     }
