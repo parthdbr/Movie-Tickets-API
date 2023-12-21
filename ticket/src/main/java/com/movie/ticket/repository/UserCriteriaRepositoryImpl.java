@@ -2,10 +2,13 @@ package com.movie.ticket.repository;
 
 import com.movie.ticket.DTO.UserSearchDTO;
 import com.movie.ticket.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@Slf4j
 public class UserCriteriaRepositoryImpl implements UserCriteriaRepository {
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -24,6 +28,14 @@ public class UserCriteriaRepositoryImpl implements UserCriteriaRepository {
     @Override
     public boolean seatsFound(List<Integer> bookSeats,String categoryName) {
 
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("booked_seats").in(bookSeats).and("category").is(categoryName))
+        );
+
+        AggregationResults<?> results = mongoTemplate.aggregate(aggregation, "user", User.class);
+
+        return !results.getMappedResults().isEmpty();
+/*
         Query query = new Query();
 
 
@@ -40,6 +52,7 @@ public class UserCriteriaRepositoryImpl implements UserCriteriaRepository {
         List<User> user = mongoTemplate.find(query, User.class);
 
         return !user.isEmpty();
+*/
     }
 
     @Override

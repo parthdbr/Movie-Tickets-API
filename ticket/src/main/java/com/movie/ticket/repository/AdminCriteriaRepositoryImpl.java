@@ -8,6 +8,8 @@ import com.movie.ticket.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
@@ -35,10 +37,11 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
     @Override
     public String checkSeatsAvailable(CategoryDTO categoryDTO) {
 
-        List<Category> categories = mongoTemplate.findAll(Category.class);
 
         int start = Integer.parseInt(categoryDTO.getStart_seat_number());
         int end = Integer.parseInt(categoryDTO.getEnd_seat_number());
+
+        List<Category> categories = mongoTemplate.findAll(Category.class);
 
         return categories.stream()
                 .filter(category -> !category.isSoftDelete())
@@ -54,14 +57,23 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
     @Override
     public User getUserBySeatNumber(int seatNumber) throws DataNotAvailableException {
 
+        Aggregation aggregation = Aggregation.newAggregation(
+          Aggregation.match(Criteria.where("booked_seats").in(seatNumber))
+        );
+
+        AggregationResults<User> results = mongoTemplate.aggregate(aggregation, "user", User.class);
+
+  /*      log.info("--> {}", results.getMappedResults());
+
         Query query = new Query();
 
         query.addCriteria(Criteria.where("booked_seats").in(seatNumber));
 
-        User user = mongoTemplate.findOne(query, User.class);
+        User user = mongoTemplate.findOne(query, User.class);*/
 
-        if (user!=null)
-            return user;
+
+        if (!results.getMappedResults().isEmpty())
+            return (User) results.getMappedResults().get(0);
         else
             throw new DataNotAvailableException("Seat/Seats are available for booking");
     }
@@ -71,9 +83,19 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
 
 //        List<User> userList = mongoTemplate.findAll(User.class);
 
+        Aggregation aggregation = Aggregation.newAggregation(
+          Aggregation.match(Criteria.where("email").is(email).and("softDelete").is(false))
+        );
+
+        AggregationResults<User> results = mongoTemplate.aggregate(aggregation, "user", User.class);
+
+       return results.getMappedResults().stream().findFirst().orElse(null);
+
+/*
         return (mongoTemplate.findAll(User.class)).stream()
                 .filter(p -> p.getEmail().equals(email))
                 .filter(p -> !p.isSoftDelete()).findAny().orElse(null);
+*/
 
     }
 
