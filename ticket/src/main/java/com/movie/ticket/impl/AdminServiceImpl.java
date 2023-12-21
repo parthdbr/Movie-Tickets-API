@@ -118,10 +118,10 @@ public class AdminServiceImpl implements AdminService {
         if (user == null)
             throw new DataNotAvailableException("User not found!");
         nullAware.copyProperties(user, userDTO);
-        Email<UserDTO> emailDTO = new Email<>();
+        Email<User> emailDTO = new Email<>();
         emailDTO.setKey("userUpdation");
         emailDTO.setSubject("User Updated");
-        emailDTO.setSomeDTO(userDTO);
+        emailDTO.setSomeDTO(user);
         rabbitMQProducer.sendMessage(emailDTO);
         emailDescRepository.save(emailDTO);
         return userRepository.save(user);
