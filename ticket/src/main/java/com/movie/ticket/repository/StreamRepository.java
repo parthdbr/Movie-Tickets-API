@@ -3,8 +3,10 @@ package com.movie.ticket.repository;
 import com.movie.ticket.model.User;
 import javafx.util.Pair;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface StreamRepository {
     Map<String, List<User>> findUsersCityWise();
@@ -19,5 +21,5 @@ public interface StreamRepository {
 
     Map<String, List<User>> adultUsers();
 
-    Map<String, Boolean> uniqueCityNames();
+    Set<String> uniqueCityNames();
 }

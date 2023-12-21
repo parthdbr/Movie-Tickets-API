@@ -10,10 +10,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -54,10 +51,10 @@ public class StreamRepositoryImpl implements StreamRepository{
     @Override
     public Map<String, List<User>> sortUsersByBirthdate() {
         List<User> userList = mongoTemplate.findAll(User.class);
-        return userList.stream()
-                .sorted(Comparator.nullsLast(Comparator.comparing(User::getBirthdate))
-                        .thenComparing(Comparator.nullsLast(Comparator.comparing(User::getFirst_name))))
-                .collect(Collectors.groupingBy(User::getFirst_name));
+        return (userList.stream()
+                .sorted(Comparator.nullsLast(Comparator.comparing(User::getBirthdate, Comparator.nullsLast(Comparator.naturalOrder())))
+                        .thenComparing(Comparator.nullsLast(Comparator.comparing(User::getFirst_name, Comparator.nullsLast(Comparator.naturalOrder())))))
+                .collect(Collectors.groupingBy(User::getFirst_name)));
     }
 
     @Override
@@ -73,19 +70,19 @@ public class StreamRepositoryImpl implements StreamRepository{
     public Map<String, List<User>> adultUsers() {
         List<User> userList = mongoTemplate.findAll(User.class);
         return userList.stream()
+                .filter(user -> user.getBirthdate()!=null)
                 .sorted(Comparator.comparing(user -> Period.between(user.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears() ))
                 .filter(user -> Period.between(user.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears() >= 18)
                 .collect(Collectors.groupingBy(User::getFirst_name));
     }
 
     @Override
-    public Map<String, Boolean> uniqueCityNames() {
+    public Set<String> uniqueCityNames() {
         List<User> userList = mongoTemplate.findAll(User.class);
         return userList.stream()
                 .filter(Objects::nonNull)
                 .map(User::getCity)
-                .distinct()
-                .collect(Collectors.toMap(city -> city, city -> true));
+                .collect(Collectors.toSet());
     }
 
 

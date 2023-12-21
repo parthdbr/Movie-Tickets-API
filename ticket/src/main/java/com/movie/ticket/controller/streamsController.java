@@ -11,8 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -67,7 +69,7 @@ public class streamsController {
 
     @GetMapping("/unique_city_names")
     @Access(roles = Role.ADMIN)
-    public Map<String, Boolean> cityNames(){
+    public Set<String> cityNames(){
         return streamRepository.uniqueCityNames();
 
     }
