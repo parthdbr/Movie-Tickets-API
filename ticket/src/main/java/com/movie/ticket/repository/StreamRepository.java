@@ -1,19 +1,23 @@
 package com.movie.ticket.repository;
 
+import com.movie.ticket.model.User;
+import javafx.util.Pair;
+
+import java.util.List;
 import java.util.Map;
 
 public interface StreamRepository {
-    Map<?,?> findUsersCityWise();
+    Map<String, List<User>> findUsersCityWise();
 
-    Map<?,?> findUsersStateAndCityWise();
+    Map<Pair<String,String>, List<User>> findUsersStateAndCityWise();
 
-    Map<?,?> findUsersCountryAndStateAndCityWise();
+    Map<Pair<String, Pair<String,String>>, List<User>> findUsersCountryAndStateAndCityWise();
 
-    Map<?,?> sortUsersByBirthdate();
+    Map<String, List<User>> sortUsersByBirthdate();
 
-    Map<?,?> collectByEmail();
+    Map<String, List<User>> collectByEmail();
 
-    Map<?,?> adultUsers();
+    Map<String, List<User>> adultUsers();
 
-    Map<?,?> uniqueCityNames();
+    Map<String, Boolean> uniqueCityNames();
 }
