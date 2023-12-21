@@ -75,15 +75,15 @@ public class UserAspect {
             } else if (args[0] instanceof Category) {
                 String id = ((UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
                 Category category = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(((Category) args[0]).getName());
-                User user = userRepository.findByIdAndSoftDeleteIsFalse(id);
+                Category category1 = categoryRepository.findByIdAndSoftDeleteIsFalse(id);
                 if (!ObjectUtils.isEmpty(category)){
-                    ((Category)args[0]).setUpdatedBy(user.getId());
+                    ((Category)args[0]).setUpdatedBy(id);
                     ((Category)args[0]).setUpdatedAt(new Date());
                 }else{
                     Object obj = joinPoint.proceed();
-                    Category category1 = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(((Category) args[0]).getName());
-                    category1.setCreatedBy(user.getId());
-                    category1.setCreatedAt(new Date());
+                    Category category2 = categoryRepository.findByNameContainingAndSoftDeleteIsFalse(((Category) args[0]).getName());
+                    category2.setCreatedBy(id);
+                    category2.setCreatedAt(new Date());
                     nullAwareBeanUtilsBean.copyProperties(args[0], category1);
                 }
                 return joinPoint.proceed(args);
