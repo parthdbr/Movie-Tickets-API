@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
 
         DataResponse<User> response = new DataResponse<>();
 
-        response.setStatus(new Response(HttpStatus.NOT_ACCEPTABLE, exception.getMessage(), "406"));
+        response.setStatus(new Response(HttpStatus.NOT_FOUND, exception.getMessage(), "404"));
 
         return response;
 
