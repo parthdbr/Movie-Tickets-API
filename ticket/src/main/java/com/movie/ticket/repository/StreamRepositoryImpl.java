@@ -1,11 +1,14 @@
 package com.movie.ticket.repository;
 
+import com.mongodb.BasicDBObject;
+import com.movie.ticket.DTO.AgeDTO;
 import com.movie.ticket.model.User;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -70,7 +73,7 @@ public class StreamRepositoryImpl implements StreamRepository{
     public Map<String, List<User>> adultUsers() {
         List<User> userList = mongoTemplate.findAll(User.class);
         return userList.stream()
-                .filter(user -> user.getBirthdate()!=null)
+                .filter(user -> !ObjectUtils.isEmpty(user.getBirthdate()))
                 .sorted(Comparator.comparing(user -> Period.between(user.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears() ))
                 .filter(user -> Period.between(user.getBirthdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears() >= 18)
                 .collect(Collectors.groupingBy(User::getFirst_name));
