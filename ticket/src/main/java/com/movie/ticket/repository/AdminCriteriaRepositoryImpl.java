@@ -1,23 +1,23 @@
 package com.movie.ticket.repository;
 
+import com.movie.ticket.DTO.AgeDTO;
 import com.movie.ticket.DTO.CategoryDTO;
 import com.movie.ticket.exception.DataNotAvailableException;
 import com.movie.ticket.model.Category;
 import com.movie.ticket.model.User;
-import com.movie.ticket.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Component
 @Slf4j
@@ -110,5 +110,19 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
         }else{
             return null;
         }
+    }
+
+    @Override
+    public List<?> findAgeOfUser() {
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("birthdate").ne(null)
+                        .and("first_name").ne(null)
+                        .and("last_name").ne(null)),
+                addFields().addField("full_name").withValue(StringOperators.Concat.valueOf("$first_name").concat(" ").concatValueOf("$last_name"))
+                        .addField("age").withValue(ArithmeticOperators.Subtract.valueOf(DateOperators.Year.year(new Date())).subtract(DateOperators.Year.yearOf("$birthdate"))).build(),
+                sort(Sort.Direction.ASC, "age"),
+                match(Criteria.where("age").gte(18))
+        );
+        return mongoTemplate.aggregate(aggregation,"user", AgeDTO.class).getMappedResults();
     }
 }

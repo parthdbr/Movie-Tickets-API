@@ -4,6 +4,8 @@ import com.movie.ticket.DTO.CategoryDTO;
 import com.movie.ticket.exception.DataNotAvailableException;
 import com.movie.ticket.model.User;
 
+import java.util.List;
+
 public interface AdminCriteriaRepository {
     String checkSeatsAvailable(CategoryDTO categoryDTO);
 
@@ -12,4 +14,6 @@ public interface AdminCriteriaRepository {
     User getUserByEmail(String email);
 
     User getUserAndAllow(String id, boolean allowed);
+
+    List<?> findAgeOfUser();
 }

@@ -235,5 +235,22 @@ public class adminController {
         return response;
     }
 
+    @GetMapping("/Users_Age")
+    @Access(roles = Role.ADMIN)
+    public <T> ListDataResponse<T> usersAge() {
+        ListDataResponse<T> response = new ListDataResponse<>();
+
+        List<?> userList = adminCriteriaRepository.findAgeOfUser();
+
+        if (userList.isEmpty()) {
+            response.setStatus(new Response(HttpStatus.NOT_FOUND, "No Users Found","404"));
+        }else{
+            response.setData((List<T>) userList);
+            response.setStatus(new Response(HttpStatus.FOUND, "Users Found with Age","302"));
+        }
+
+        return response;
+    }
+
 
 }
