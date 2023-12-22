@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -56,24 +57,24 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
 
     @Override
     public User getUserBySeatNumber(int seatNumber) throws DataNotAvailableException {
-
+/*
         Aggregation aggregation = Aggregation.newAggregation(
           Aggregation.match(Criteria.where("booked_seats").in(seatNumber))
         );
 
-        AggregationResults<User> results = mongoTemplate.aggregate(aggregation, "user", User.class);
+        AggregationResults<User> results = mongoTemplate.aggregate(aggregation, "user", User.class);*/
 
-  /*      log.info("--> {}", results.getMappedResults());
+//        log.info("--> {}", results.getMappedResults());
 
         Query query = new Query();
 
         query.addCriteria(Criteria.where("booked_seats").in(seatNumber));
 
-        User user = mongoTemplate.findOne(query, User.class);*/
+        User user = mongoTemplate.findOne(query, User.class);
 
 
-        if (!results.getMappedResults().isEmpty())
-            return (User) results.getMappedResults().get(0);
+        if (!ObjectUtils.isEmpty(user))
+            return user;
         else
             throw new DataNotAvailableException("Seat/Seats are available for booking");
     }
@@ -81,21 +82,19 @@ public class AdminCriteriaRepositoryImpl implements AdminCriteriaRepository {
     @Override
     public User getUserByEmail(String email) {
 
-//        List<User> userList = mongoTemplate.findAll(User.class);
+        List<User> userList = mongoTemplate.findAll(User.class);
 
-        Aggregation aggregation = Aggregation.newAggregation(
+       /* Aggregation aggregation = Aggregation.newAggregation(
           Aggregation.match(Criteria.where("email").is(email).and("softDelete").is(false))
         );
 
         AggregationResults<User> results = mongoTemplate.aggregate(aggregation, "user", User.class);
 
-       return results.getMappedResults().stream().findFirst().orElse(null);
+       return results.getMappedResults().stream().findFirst().orElse(null);*/
 
-/*
         return (mongoTemplate.findAll(User.class)).stream()
                 .filter(p -> p.getEmail().equals(email))
                 .filter(p -> !p.isSoftDelete()).findAny().orElse(null);
-*/
 
     }
 
